@@ -1,0 +1,7 @@
+#!/bin/bash
+
+virtualenv --system-site-packages weatherve
+
+source weatherve/bin/activate
+
+pip install -r requirements.pip

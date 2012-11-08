@@ -1,0 +1,147 @@
+{% extends "html/base.html" %}
+
+{% block content %}
+<h2>{% if yesterday %}<a href="{% url app.views.day yesterday.year yesterday.month yesterday.day %}">&lt;&lt;</a>{% endif %}
+    {{ date|date:"l" }}
+    <a href="{% url app.views.month date.year date.month %}">{{ date|date:"F" }}</a>
+    {{ date.day }},
+    <a href="{% url app.views.year date.year %}">{{ date.year }}</a>
+    {% if tomorrow %}<a href="{% url app.views.day tomorrow.year tomorrow.month tomorrow.day %}">&gt;&gt;</a>{% endif %}</h2>
+
+<h3>Temperature</h3>
+
+<p>Outside: <b>Maximum:</b> {{ day.max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_out }}<sup>o</sup>C</p>
+<p>Inside: <b>Maximum:</b> {{ day.max_temp_in }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_in }}<sup>o</sup>C</p>
+
+<div id="tempchart_div"></div>
+
+<h3>Rainfall</h3>
+
+<p><b>Total Rainfall:</b> {{ day.rain }} mm</p>
+
+{% if total_rain > 0 %}
+<div id="rainchart_div"></div>
+{% endif %}
+
+<h3>Pressure</h3>
+
+<div id="pressuret_div"></div>
+
+<h3>Wind (mph)</h3>
+
+<table><tr>
+<td id="windspeed_div"></td>
+<td id="winddir_div"></td>
+</tr></table>
+
+<h3>Humidity</h3>
+
+<p>Outside: <b>Maximum:</b> {{ day.max_hum_out }}% <b>Minimum:</b> {{ day.min_hum_out }}%</p>
+<p>Inside: <b>Maximum:</b> {{ day.max_hum_in }}% <b>Minimum:</b> {{ day.min_hum_in }}%</p>
+
+<div id="humidity_div"></div>
+
+<script>
+function drawTempChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Outside');
+    data.addColumn('number', 'Inside');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.temp_out }}, {{ row.temp_in }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('tempchart_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Temperature'});
+}
+google.setOnLoadCallback(drawTempChart);
+
+{% if total_rain > 0 %}
+function drawRainChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Rain');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.rain }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('rainchart_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Rainfall'});
+}
+google.setOnLoadCallback(drawRainChart);
+{% endif %}
+
+function drawPressureChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Pressure');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.abs_pressure }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('pressuret_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Pressure'});
+}
+google.setOnLoadCallback(drawPressureChart);
+
+function drawWindSpeedChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Avg Speed');
+    data.addColumn('number', 'Gust');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.wind_ave }}, {{ row.wind_gust }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('windspeed_div'));
+    chart.draw(data, {width: 650, height: 240, title: 'Wind Speed'});
+}
+google.setOnLoadCallback(drawWindSpeedChart);
+
+function drawWindDirChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', '');
+
+    data.addRows([
+    {% for value in day.wind_dir_list %}
+        [{{ value }}],
+    {% endfor %}
+        [{{ day.wind_dir_list.0 }}]]);
+
+    var options = { cht: 'rs', chxt: 'x', chxl: '0:|N|NE|E|SE|S|SW|W|NW', chm: 'B,76A4FB80,0,0,0', min: 0, legend: "none" };
+
+    var chart = new google.visualization.ImageChart(document.getElementById('winddir_div'));
+    chart.draw(data, options);
+}
+google.setOnLoadCallback(drawWindDirChart);
+
+function drawHumidityChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Outside');
+    data.addColumn('number', 'Inside');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.hum_out }}, {{ row.hum_in }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('humidity_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Humidity'});
+}
+google.setOnLoadCallback(drawHumidityChart);
+</script>
+{% endblock %}
