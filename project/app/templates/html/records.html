@@ -1,0 +1,131 @@
+{% extends "html/base.html" %}
+
+{% block content %}
+    <div class="record">
+        <h3>Highest Indoor Temperature</h3>
+        <table>
+            {% for row in highest_temp_in %}
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.temperature }}<sup>o</sup>C</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Highest Outdoor Temperature</h3>
+        <table>
+            {% for row in highest_temp_out %}
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.temperature }}<sup>o</sup>C</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Highest Pressure</h3>
+        <table>
+            {% for row in highest_pressure %}
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.pressure }} mbar</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Lowest Indoor Temperature</h3>
+        <table>
+            {% for row in lowest_temp_in %}
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.temperature }}<sup>o</sup>C</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Lowest Outdoor Temperature</h3>
+        <table>
+            {% for row in lowest_temp_out %}
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.temperature }}<sup>o</sup>C</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Lowest Pressure</h3>
+        <table>
+            {% for row in lowest_pressure %}
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.pressure }} mbar</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Heaviest Rain</h3>
+        <table>
+            {% for row in heaviest_rain %}
+            <tr><td class="date">{{ row.date|date:"d M Y, h a" }}</td><td class="value">{{ row.rain }} mm</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Wettest Day</h3>
+        <table>
+            {% for row in wettest_day %}
+            <tr><td class="date">{{ row.date|date:"d M Y" }}</td><td class="value">{{ row.rain }} mm</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Wettest Period</h3>
+        <table>
+            {% for row in wettest_period %}
+            <tr><td class="date">{{ row.start_date|date:"d M Y" }} to {{ row.end_date|date:"d M" }}</td><td class="value">{{ row.length }} days</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Strongest Gust</h3>
+        <table>
+            {% for row in strongest_gust %}
+            <tr><td class="date">{{ row.date|date:"d M Y, h a" }}</td><td class="value">{{ row.speed }} mph</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Strongest Average Wind</h3>
+        <table>
+            {% for row in strongest_wind %}
+            <tr><td class="date">{{ row.date|date:"d M Y, h a" }}</td><td class="value">{{ row.speed }} mph</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Driest Period</h3>
+        <table>
+            {% for row in driest_period %}
+            <tr><td class="date">{{ row.start_date|date:"d M Y" }} to {{ row.end_date|date:"d M" }}</td><td class="value">{{ row.length }} days</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Warmest Spell (&gt; 27<sup>o</sup>C)</h3>
+        <table>
+            {% for row in warmest_period %}
+            <tr><td class="date">{{ row.start_date|date:"d M Y" }} to {{ row.end_date|date:"d M" }}</td><td class="value">{{ row.length }} days</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="record">
+        <h3>Coldest Spell (&lt; 0<sup>o</sup>C)</h3>
+        <table>
+            {% for row in coldest_period %}
+            <tr><td class="date">{{ row.start_date|date:"d M Y" }} to {{ row.end_date|date:"d M" }}</td><td class="value">{{ row.length }} days</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div style="clear: both;"></div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "html/base.html" %}
+
+{% block content %}
+<h2>About</h2>
+
+<a href="http://www.flickr.com/photos/andrew_j_w/6246463884/"><img src="http://farm7.staticflickr.com/6163/6246463884_4edf183da8.jpg" style="float: right; margin-bottom: 10px;"></a><p>This website shows the weather data collected from my back garden in <a href="http://g.co/maps/u25g2">Welwyn Garden City</a>.</p>
+
+<p>The weather station we use is made by <a href="http://smartweather.co.uk/product.php?productid=16144&cat=249&page=1">Smart Weather</a> and we read the data using <a href="http://code.google.com/p/pywws/">PyWWS</a>. It measures indoor and outdoor temperature and humidity, wind speed and direction, pressure and it has rain guage.</p>
+
+<p>The weather station used is not a scientific instrument and it has not be calibrated or properly mounted so that data should be taken with a gain of salt.</p>
+
+<hr style="clear: both;">
+{% endblock %}
