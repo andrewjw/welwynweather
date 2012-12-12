@@ -1,2 +1,3 @@
 *.pyc
 weatherve
+settings_local.py

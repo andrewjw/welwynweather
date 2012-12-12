@@ -14,6 +14,10 @@ framework.
 
 """
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + "/../")
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + "/../../weatherve/lib/python2.7/site-packages")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "weather.settings")
 

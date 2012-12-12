@@ -116,6 +116,7 @@ p.subdates {
     border: 2px solid black;
     text-align: center;
     padding: 5px;
+    min-height: 185px;
 }
 
 .record table {
