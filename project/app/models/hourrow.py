@@ -2,6 +2,12 @@ from datetime import timedelta
 
 from django.db import models
 
+from heaviestrainrecord import HeaviestRainRecord
+
+dir_text_map = { 0: "North", 1: "NNE", 2: "North East", 3: "ENE",
+    4: "East", 5: "ESE", 6: "South East", 7: "SSE", 8: "South",
+    9: "SSW", 10: "South West", 11: "WSW", 12: "West", 13: "WNW", 14: "North West", 15: "NNW" }
+
 class HourRow(models.Model):
     date = models.DateTimeField(primary_key=True)
 
@@ -21,6 +27,18 @@ class HourRow(models.Model):
     rained = models.BooleanField()
 
     status = models.IntegerField()
+
+    @property
+    def time(self):
+        return self.date.strftime("%a %d, %I %p")
+
+    @property
+    def dir_text(self):
+        items = eval(self.wind_dir).items()
+        if len(items) == 0:
+            return "N/A"
+        items.sort(key=lambda x: -x[1])
+        return dir_text_map[items[0][0]]
 
     def update(self):
         in_count, out_count = 0, 0
@@ -67,10 +85,13 @@ class HourRow(models.Model):
         self.rained = self.rain > 0
 
         self.status = status
-        
+
         self.save()
+
+        HeaviestRainRecord.update(self)
 
     class Meta:
         app_label = "app"
+        ordering = ["date"]
 
 from weatherrow import WeatherRow

@@ -8,7 +8,10 @@ import time
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.timezone import utc
 
-from app.models import WeatherRow
+from app.models import WeatherRow, HighestTemperatureRecord, LowestTemperatureRecord
+from app.models import DriestPeriodRecord, WettestPeriodRecord, WettestDayRecord
+from app.models import ColdestPeriodRecord, WarmestPeriodRecord
+from app.models import ClimateMonth
 
 class Command(BaseCommand):
     def handle(self, **options):
@@ -44,6 +47,9 @@ def import_month(data_dir, last_update, year, month):
 def import_day(filename, last_update):
     fp = csv.reader(open(filename, "r"))
 
+    first_day = True
+
+    print filename
     for row in fp:
         update = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=utc)
         if update <= last_update:
@@ -57,7 +63,7 @@ def import_day(filename, last_update):
             rain = 0
             raw_rain = 0
 
-        if rain is not None and rain < 0:
+        if rain is not None and (rain < 0 or rain > 10):
             rain = 0
 
         try:
@@ -80,6 +86,18 @@ def import_day(filename, last_update):
         obj.raw_rain = raw_rain
 
         obj.save()
+        
+        if first_day:
+            d = obj.get_day().prev_day()
+            if d != None:
+                HighestTemperatureRecord.update(d)
+                LowestTemperatureRecord.update(d)
+                DriestPeriodRecord.update(d)
+                WettestPeriodRecord.update(d)
+                WettestDayRecord.update(d)
+                ColdestPeriodRecord.update(d)
+                WarmestPeriodRecord.update(d)
+                ClimateMonth.update(d)
 
 def get_last_update():
     try:

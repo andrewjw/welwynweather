@@ -17,3 +17,8 @@ from strongestwindrecord import StrongestWindRecord
 
 from highesttemperaturerecord import HighestTemperatureRecord
 from lowesttemperaturerecord import LowestTemperatureRecord
+
+from coldestperiodrecord import ColdestPeriodRecord
+from warmestperiodrecord import WarmestPeriodRecord
+
+from climatemonth import ClimateMonth

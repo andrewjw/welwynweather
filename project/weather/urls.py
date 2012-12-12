@@ -5,9 +5,12 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^$', 'app.views.index'),
     url(r'^(\d\d\d\d)/(\d\d?)/(\d\d?)$', 'app.views.day', name='day'),
     url(r'^(\d\d\d\d)/(\d\d?)$', 'app.views.month', name='month'),
     url(r'^(\d\d\d\d)$', 'app.views.year', name='year'),
+    url(r'^about$', 'app.views.about'),
+    url(r'^records$', 'app.views.records'),
     # Examples:
     # url(r'^$', 'weather.views.home', name='home'),
     # url(r'^weather/', include('weather.foo.urls')),

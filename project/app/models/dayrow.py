@@ -31,6 +31,16 @@ class DayRow(models.Model):
         obj = eval(self.wind_dir)
         return [obj.get(key, 0) for key in range(0, 16, 2)]
 
+    @property
+    def time(self):
+        return self.date.strftime("%b %d")
+
+    def prev_day(self):
+        try:
+            return DayRow.objects.get(date=self.date - timedelta(days=1))
+        except DayRow.DoesNotExist:
+            return None
+
     def update(self):
         first_in, first_out = True, True
         pressure = []
@@ -55,7 +65,7 @@ class DayRow(models.Model):
                 self.max_temp_out, self.min_temp_out = row.temp_out, row.temp_out
                 self.max_wind_gust = row.wind_gust
                 first_out = False
-            else:
+            elif row.status == 0:
                 self.max_hum_out = max(self.max_hum_out, row.hum_out)
                 self.min_hum_out = min(self.min_hum_out, row.hum_out)
                 self.max_temp_out = max(self.max_temp_out, row.temp_out)
@@ -76,10 +86,12 @@ class DayRow(models.Model):
         else:
             self.wind_ave = None
         self.wind_dir = str(wind_dir)
+        self.rained = self.rain > 0
 
         self.save()
 
     class Meta:
         app_label = "app"
+        ordering = ["date"]
 
 from weatherrow import WeatherRow

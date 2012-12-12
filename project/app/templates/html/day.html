@@ -8,6 +8,14 @@
     <a href="{% url app.views.year date.year %}">{{ date.year }}</a>
     {% if tomorrow %}<a href="{% url app.views.day tomorrow.year tomorrow.month tomorrow.day %}">&gt;&gt;</a>{% endif %}</h2>
 
+<div id="tabs">
+<ul>
+    <li><a href="#tabs-1">Charts</a></li>
+    <li><a href="#tabs-2">Data</a></li>
+    <li><a href="#tabs-3">Climate</a></li>
+    <li><a href="#tabs-4">On This Day</a></li>
+</ul>
+<div id="tabs-1">
 <h3>Temperature</h3>
 
 <p>Outside: <b>Maximum:</b> {{ day.max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_out }}<sup>o</sup>C</p>
@@ -40,6 +48,80 @@
 <p>Inside: <b>Maximum:</b> {{ day.max_hum_in }}% <b>Minimum:</b> {{ day.min_hum_in }}%</p>
 
 <div id="humidity_div"></div>
+</div>
+<div id="tabs-2">
+<table class="data_table">
+<thead>
+<tr>
+    <th>Time</th>
+    <th>Outside Temperature</th>
+    <th>Inside Temperature</th>
+    <th>Outside Humidity</th>
+    <th>Inside Humidity</th>
+    <th>Rainfall</th>
+    <th>Wind Speed (Gust)</th>
+    <th>Wind Speed (Avg)</th>
+    <th>Wind Direction</th>
+</tr>
+</thead>
+{% for row in hourly_data %}
+    <tr>
+        <td style="white-space: nowrap;">{{ row.date|date:"h a" }}</td>
+        <td>{% if row.temp_out == None %}N/A{% else %}{{ row.temp_out|floatformat:1 }}<sup>o</sup>C{% endif %}</td>
+        <td>{{ row.temp_in|floatformat:1 }}<sup>o</sup>C</td>
+        <td>{% if row.hum_out == None %}N/A{% else %}{{ row.hum_out|floatformat:1 }}%{% endif %}</td>
+        <td>{{ row.hum_in|floatformat:1 }}%</td>
+        <td>{{ row.rain|floatformat:1 }} mm</td>
+        <td>{% if row.wind_gust == None %}N/A{% else %}{{ row.wind_gust|floatformat:1 }} mph{% endif %}</td>
+        <td>{% if row.wind_ave == None %}N/A{% else %}{{ row.wind_ave|floatformat:1 }} mph{% endif %}</td>
+        <td>{{ row.dir_text }}</td>
+    </tr>
+{% endfor %}
+</table>
+</div>
+<div id="tabs-3">
+<table width="100%" class="data_table">
+<thead>
+    <tr><th>&nbsp;</th><th>{{ date|date:"d F Y" }}</th><th>{{ date|date:"F" }} Record</th><th>{{ date|date:"F" }} Average</th></tr>
+</thead>
+<tr><td>Indoor High</td><td>{{ day.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Indoor Low</td><td>{{ day.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside High</td><td>{{ day.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Low</td><td>{{ day.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Wind Gust</td><td>{{ day.max_wind_gust|floatformat:1 }} mph</td>
+                        <td>{{ climate.wind_gust_record|floatformat:1 }} mph</td>
+                        <td>{{ climate.wind_gust_average|floatformat:1 }} mph</td></tr>
+<tr><td>Wind Average</td><td>{{ day.wind_ave|floatformat:1 }} mph</td>
+                        <td>{{ climate.wind_ave_record|floatformat:1 }} mph</td>
+                        <td>{{ climate.wind_ave_average|floatformat:1 }}mph</td></tr>
+<tr><td>Rainfall</td><td>{{ day.rain|floatformat:1 }} mm</td>
+                        <td>{{ climate.rain_record|floatformat:1 }} mm</td>
+                        <td>{{ climate.rain_average|floatformat:1 }} mm</td></tr>
+</table>
+</div>
+<div id="tabs-4">
+<table width="100%" class="data_table">
+<thead>
+    <tr><th>&nbsp;</th>{% for day in on_this_day %}<th>{{ day.date.year }}</th>{% endfor %}</tr>
+</thead>
+<tr><td>Indoor High</td>{% for day in on_this_day %}<td>{{ day.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Indoor Low</td>{% for day in on_this_day %}<td>{{ day.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside High</td>{% for day in on_this_day %}<td>{{ day.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Low</td>{% for day in on_this_day %}<td>{{ day.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Wind Gust</td>{% for day in on_this_day %}<td>{{ day.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
+<tr><td>Wind Average</td>{% for day in on_this_day %}<td>{{ day.wind_ave|floatformat:1 }} mph</td>{% endfor %}</tr>
+<tr><td>Rainfall</td>{% for day in on_this_day %}<td>{{ day.rain|floatformat:1 }} mm</td>{% endfor %}</tr>
+</table>
+</div>
+</div>
 
 <script>
 function drawTempChart() {
@@ -143,5 +225,9 @@ function drawHumidityChart() {
     chart.draw(data, {width: 950, height: 240, title: 'Humidity'});
 }
 google.setOnLoadCallback(drawHumidityChart);
+
+$(document).ready(function () {
+    $("#tabs").tabs();
+});
 </script>
 {% endblock %}

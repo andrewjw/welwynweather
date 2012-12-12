@@ -103,3 +103,43 @@ p, div, th, td {
     top: -9px;
     left: -10px;
 }
+
+p.subdates {
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.record {
+    width: 310px;
+    float: left;
+    margin: 3px;
+    border: 2px solid black;
+    text-align: center;
+    padding: 5px;
+}
+
+.record table {
+    width: 100%;
+}
+
+.record td {
+    height: 1.6em;
+}
+
+.record td.date {
+    text-align: right;
+}
+
+.record td.value {
+    text-align: center;
+    width: 40%;
+}
+
+.record h3 {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+table.data_table td {
+    text-align: center;
+}

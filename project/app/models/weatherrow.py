@@ -3,6 +3,11 @@ from datetime import datetime
 from django.db import models
 from django.utils.timezone import utc
 
+from highestpressurerecord import HighestPressureRecord
+from lowestpressurerecord import LowestPressureRecord
+from strongestgustrecord import StrongestGustRecord
+from strongestwindrecord import StrongestWindRecord
+
 class WeatherRow(models.Model):
     date = models.DateTimeField(primary_key=True)
     timestamp = models.IntegerField(),
@@ -54,6 +59,12 @@ class WeatherRow(models.Model):
         self.get_hour().update()
         self.get_day().update()
         self.get_month().update()
+
+        HighestPressureRecord.update(self)
+        LowestPressureRecord.update(self)
+        
+        StrongestGustRecord.update(self)
+        StrongestWindRecord.update(self)
 
     class Meta:
         app_label = "app"
