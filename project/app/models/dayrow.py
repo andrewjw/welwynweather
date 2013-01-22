@@ -60,12 +60,12 @@ class DayRow(models.Model):
                 self.max_temp_in = max(self.max_temp_in, row.temp_in)
                 self.min_temp_in = min(self.min_temp_in, row.temp_in)
 
-            if row.status == 0 and first_out:
+            if row.contact and first_out:
                 self.max_hum_out, self.min_hum_out = row.hum_out, row.hum_out
                 self.max_temp_out, self.min_temp_out = row.temp_out, row.temp_out
                 self.max_wind_gust = row.wind_gust
                 first_out = False
-            elif row.status == 0:
+            elif row.contact:
                 self.max_hum_out = max(self.max_hum_out, row.hum_out)
                 self.min_hum_out = min(self.min_hum_out, row.hum_out)
                 self.max_temp_out = max(self.max_temp_out, row.temp_out)
@@ -73,7 +73,7 @@ class DayRow(models.Model):
                 self.max_wind_gust = max(self.max_wind_gust, row.wind_gust)
 
             pressure.append(row.abs_pressure)
-            if row.status == 0:
+            if row.contact:
                 wind_ave.append(row.wind_ave)
                 wind_dir[row.wind_dir] = wind_dir.get(row.wind_dir, 0) + 1
                 self.rain += row.rain

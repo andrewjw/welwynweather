@@ -35,6 +35,10 @@ class WeatherRow(models.Model):
     def time(self):
         return "%i:%02i" % (self.date.hour, self.date.minute)
     
+    @property
+    def contact(self):
+        return self.status & 64 == 0
+    
     def get_hour(self):
         try:
             return HourRow.objects.get(date=datetime(self.date.year, self.date.month, self.date.day, self.date.hour, tzinfo=utc))
