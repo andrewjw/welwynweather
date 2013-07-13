@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.http import Http404
 from django.shortcuts import render_to_response
 
-from app.models import HourRow, DayRow
+from app.models import HourRow, DayRow, MonthRow, ClimateByMonth
 
 def month(req, year, month):
     try:
@@ -15,6 +15,7 @@ def month(req, year, month):
     while next_month.month == date.month:
         next_month += timedelta(days=1)
 
+    dayrows = DayRow.objects.filter(date__gte=date, date__lt=next_month)
     rows = HourRow.objects.filter(date__gte=date, date__lt=next_month)
 
     if len(rows) == 0:
@@ -54,7 +55,10 @@ def month(req, year, month):
             "max_hum_out": max([row.hum_out for row in rows if row.hum_out is not None]),
             "min_hum_out": min([row.hum_out for row in rows if row.hum_out is not None]),
             "wind_dir_list": [wind_dir.get(key, 0) for key in range(0, 16, 2)],
-            "today": datetime.today()
+            "today": datetime.today(),
+            "climate": ClimateByMonth.objects.get(month=int(month)),
+            "month": MonthRow.objects.get(date=date),
+            "months": MonthRow.objects.filter(date__lte=date, date__month=int(month))
         }
 
     return render_to_response("html/month.html", context)

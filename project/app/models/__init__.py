@@ -22,3 +22,4 @@ from coldestperiodrecord import ColdestPeriodRecord
 from warmestperiodrecord import WarmestPeriodRecord
 
 from climatemonth import ClimateMonth
+from climatebymonth import ClimateByMonth

@@ -11,6 +11,9 @@ urlpatterns = patterns('',
     url(r'^(\d\d\d\d)$', 'app.views.year', name='year'),
     url(r'^about$', 'app.views.about'),
     url(r'^records$', 'app.views.records'),
+
+    url(r'^electricity/?$', 'electricity.views.index'),
+    url(r'^electricity/(\d\d\d\d)/(\d\d?)/(\d\d?)$', 'electricity.views.day'),
     # Examples:
     # url(r'^$', 'weather.views.home', name='home'),
     # url(r'^weather/', include('weather.foo.urls')),

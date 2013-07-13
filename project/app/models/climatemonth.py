@@ -23,6 +23,16 @@ class ClimateMonth(models.Model):
     rain_record = models.FloatField()
     rain_average = models.FloatField()
 
+    cold_days_record = models.IntegerField()
+    cold_days_average = models.IntegerField()
+    hot_days_record = models.IntegerField()
+    hot_days_average = models.IntegerField()
+    days_of_rain_record = models.IntegerField()
+    days_of_rain_average = models.IntegerField()
+
+    month_rain_record = models.FloatField()
+    month_rain_average = models.FloatField()
+
     @staticmethod
     def update(d):
         try:
@@ -59,7 +69,32 @@ class ClimateMonth(models.Model):
 
         month.rain_record = max(rain)
         month.rain_average = sum(rain)/len(rain)
-        
+
+        days_by_year = {}
+        for day in days:
+            if day.date.year not in days_by_year:
+                days_by_year[day.date.year] = []
+            days_by_year[day.date.year].append(day)
+
+        cold_days_by_year = {}
+        hot_days_by_year = {}
+        rain_days_by_year = {}
+        month_rain_by_year = {}
+        for year in days_by_year:
+            cold_days_by_year[year] = len([d for d in days_by_year[year] if d.min_temp_out < 0])
+            hot_days_by_year[year] = len([d for d in days_by_year[year] if d.max_temp_out > 27])
+            rain_days_by_year[year] = len([d for d in days_by_year[year] if d.rain > 0])
+            month_rain_by_year[year] = sum([d.rain for d in days_by_year[year]])
+
+        month.cold_days_average = sum(cold_days_by_year.values())/len(cold_days_by_year)
+        month.cold_days_record = max(cold_days_by_year.values())
+        month.hot_days_average = sum(hot_days_by_year.values())/len(hot_days_by_year)
+        month.hot_days_record = max(hot_days_by_year.values())
+        month.days_of_rain_average = sum(rain_days_by_year.values())/len(rain_days_by_year)
+        month.days_of_rain_record = max(rain_days_by_year.values())
+        month.month_rain_record = max(month_rain_by_year.values())
+        month.month_rain_average = sum(month_rain_by_year.values())/len(month_rain_by_year.values())
+
         month.save()
 
     class Meta:

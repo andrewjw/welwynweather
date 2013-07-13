@@ -90,8 +90,11 @@ class DayRow(models.Model):
 
         self.save()
 
+        MonthRow.update(self)
+
     class Meta:
         app_label = "app"
         ordering = ["date"]
 
 from weatherrow import WeatherRow
+from monthrow import MonthRow
