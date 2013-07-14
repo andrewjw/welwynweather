@@ -9,6 +9,13 @@
         <a href="{% url app.views.month month.year month.month %}">{{ month|date:"F" }}</a>
     {% endfor %}</p>
 
+    <div id="tabs">
+<ul>
+    <li><a href="#tabs-1">Charts</a></li>
+    <li><a href="#tabs-2">Climate</a></li>
+    <li><a href="#tabs-3">Previous Years</a></li>
+</ul>
+<div id="tabs-1">
 <h3>Temperature</h3>
 
 <p>Outside: <b>Maximum:</b> {{ max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ min_temp_out }}<sup>o</sup>C</p>
@@ -38,6 +45,58 @@
 <h3>Humidity</h3>
 
 <div id="humidity_div"></div>
+</div>
+<div id="tabs-2">
+<table width="100%" class="data_table">
+<thead>
+    <tr><th>&nbsp;</th><th>{{ date|date:"Y" }}</th><th>Yearly Record</th><th>Yearly Average</th></tr>
+</thead>
+<tr><td>Indoor High</td><td>{{ year.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Indoor Low</td><td>{{ year.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside High</td><td>{{ year.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Low</td><td>{{ year.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Cold Days (&lt;0<sup>o</sup>C)</td><td>{{ year.cold_days }} days</td>
+                        <td>{{ climate.cold_days_record }} days</td>
+                        <td>{{ climate.cold_days_average|floatformat:1 }} days</td></tr>
+<tr><td>Hot Days (&gt;27<sup>o</sup>C)</td><td>{{ year.hot_days }} days</td>
+                        <td>{{ climate.hot_days_record }} days</td>
+                        <td>{{ climate.hot_days_average|floatformat:1 }} days</td></tr>
+<tr><td>Wind Gust</td><td>{{ year.max_wind_gust|floatformat:1 }} mph</td>
+                        <td>{{ climate.wind_gust_record|floatformat:1 }} mph</td>
+                        <td>{{ climate.wind_gust_average|floatformat:1 }} mph</td></tr>
+<tr><td>Rainfall</td><td>{{ year.rain|floatformat:1 }} mm</td>
+                        <td>{{ climate.rain_record|floatformat:1 }} mm</td>
+                        <td>{{ climate.rain_average|floatformat:1 }} mm</td></tr>
+<tr><td>Days Of Rain</td><td>{{ year.rain_days }} days</td>
+                        <td>{{ climate.days_of_rain_record }} days</td>
+                        <td>{{ climate.days_of_rain_average|floatformat:1 }} days</td></tr>
+</table>
+</div>
+<div id="tabs-3">
+<table width="100%" class="data_table">
+<thead>
+    <tr><th>&nbsp;</th>{% for year in years %}<th>{{ year.date.year }}</th>{% endfor %}</tr>
+</thead>
+<tr><td>Indoor High</td>{% for year in years %}<td>{{ year.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Indoor Low</td>{% for year in years %}<td>{{ year.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside High</td>{% for year in years %}<td>{{ year.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Low</td>{% for year in years %}<td>{{ year.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Cold Days (&lt;0<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.cold_days }}</td>{% endfor %}</tr>
+<tr><td>Hot Days (&gt;0<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.hot_days }}</td>{% endfor %}</tr>
+<tr><td>Wind Gust</td>{% for year in years %}<td>{{ year.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
+<tr><td>Rainfall</td>{% for year in years %}<td>{{ year.rain|floatformat:1 }} mm</td>{% endfor %}</tr>
+<tr><td>Days Of Rain</td>{% for year in years %}<td>{{ year.rain_days }}</td>{% endfor %}</tr>
+</table>
+</div>
+</div>
 
 <script>
 function drawTempChart() {
@@ -145,5 +204,9 @@ function drawHumidityChart() {
     chart.draw(data, {width: 950, height: 240, title: 'Humidity'});
 }
 google.setOnLoadCallback(drawHumidityChart);
+
+$(document).ready(function () {
+    $("#tabs").tabs();
+});
 </script>
 {% endblock %}

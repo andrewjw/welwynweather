@@ -2,6 +2,7 @@ from weatherrow import WeatherRow
 from hourrow import HourRow
 from dayrow import DayRow
 from monthrow import MonthRow
+from yearrow import YearRow
 
 from driestperiodrecord import DriestPeriodRecord
 from wettestperiodrecord import WettestPeriodRecord
@@ -23,3 +24,4 @@ from warmestperiodrecord import WarmestPeriodRecord
 
 from climatemonth import ClimateMonth
 from climatebymonth import ClimateByMonth
+from climatebyyear import ClimateByYear

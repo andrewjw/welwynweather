@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 
 from django.http import Http404
 from django.shortcuts import render_to_response
+from django.utils import timezone
 
-from app.models import DayRow
+from app.models import DayRow, YearRow, ClimateByYear
 
 def year(req, year):
     try:
@@ -46,7 +47,10 @@ def year(req, year):
             "max_temp_out": max([row.max_temp_out for row in rows if row.max_temp_out is not None]),
             "min_temp_out": min([row.min_temp_out for row in rows if row.min_temp_out is not None]),
             "wind_dir_list": [wind_dir.get(key, 0) for key in range(0, 16, 2)],
-            "today": datetime.today()
+            "today": datetime.today(),
+            "climate": ClimateByYear.objects.get(),
+            "year": YearRow.objects.get(date=date),
+            "years": YearRow.objects.filter(date__lte=date, date__gte=datetime(2012, 1, 1).replace(tzinfo=timezone.utc))
         }
 
     return render_to_response("html/year.html", context)

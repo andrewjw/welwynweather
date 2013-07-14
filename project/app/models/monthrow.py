@@ -62,8 +62,10 @@ class MonthRow(models.Model):
         m.save()
         
         ClimateByMonth.update(d)
+        YearRow.update(d)
 
     class Meta:
         app_label = "app"
 
+from yearrow import YearRow
 from climatebymonth import ClimateByMonth
