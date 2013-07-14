@@ -62,7 +62,6 @@ class WeatherRow(models.Model):
 
         self.get_hour().update()
         self.get_day().update()
-        self.get_month().update()
 
         HighestPressureRecord.update(self)
         LowestPressureRecord.update(self)

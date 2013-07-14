@@ -58,7 +58,7 @@ def month(req, year, month):
             "today": datetime.today(),
             "climate": ClimateByMonth.objects.get(month=int(month)),
             "month": MonthRow.objects.get(date=date),
-            "months": MonthRow.objects.filter(date__lte=date, date__month=int(month))
+            "months": MonthRow.objects.filter(date__lte=date, date__month=int(month))[::-1]
         }
 
     return render_to_response("html/month.html", context)

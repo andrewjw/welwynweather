@@ -37,6 +37,13 @@ def year(req, year):
             next_month += timedelta(days=1)
         month = next_month
 
+    years = YearRow.objects.filter(date__lte=date, date__gte=datetime(2012, 1, 1).replace(tzinfo=timezone.utc))
+    for yearobj in years:
+        if yearobj.date.year == datetime.now().year:
+            days_in_year = (datetime(year, 12, 31) - datetime(year, 1, 1)).days
+            days_so_far = (datetime.now() - datetime(year, 1, 1)).days
+            yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
+
     context = {
             "rows": rows,
             "date": date, "months": months,
@@ -50,7 +57,7 @@ def year(req, year):
             "today": datetime.today(),
             "climate": ClimateByYear.objects.get(),
             "year": YearRow.objects.get(date=date),
-            "years": YearRow.objects.filter(date__lte=date, date__gte=datetime(2012, 1, 1).replace(tzinfo=timezone.utc))
+            "years": years
         }
 
     return render_to_response("html/year.html", context)

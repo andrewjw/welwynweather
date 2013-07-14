@@ -85,14 +85,16 @@
 <thead>
     <tr><th>&nbsp;</th>{% for year in years %}<th>{{ year.date.year }}</th>{% endfor %}</tr>
 </thead>
-<tr><td>Indoor High</td>{% for year in years %}<td>{{ year.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
-<tr><td>Indoor Low</td>{% for year in years %}<td>{{ year.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
-<tr><td>Outside High</td>{% for year in years %}<td>{{ year.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
-<tr><td>Outside Low</td>{% for year in years %}<td>{{ year.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Indoor Record High</td>{% for year in years %}<td>{{ year.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Indoor Record Low</td>{% for year in years %}<td>{{ year.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Record High</td>{% for year in years %}<td>{{ year.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Record Low</td>{% for year in years %}<td>{{ year.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Cold Days (&lt;0<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.cold_days }}</td>{% endfor %}</tr>
 <tr><td>Hot Days (&gt;0<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.hot_days }}</td>{% endfor %}</tr>
 <tr><td>Wind Gust</td>{% for year in years %}<td>{{ year.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
-<tr><td>Rainfall</td>{% for year in years %}<td>{{ year.rain|floatformat:1 }} mm</td>{% endfor %}</tr>
+<tr><td>Rainfall</td>{% for year in years %}<td>{{ year.rain|floatformat:1 }} mm
+                                                {% if year.predicated_rain %}{{ year.predicated_rain|floatformat:1 }} mm{% endif %}
+                                            </td>{% endfor %}</tr>
 <tr><td>Days Of Rain</td>{% for year in years %}<td>{{ year.rain_days }}</td>{% endfor %}</tr>
 </table>
 </div>
