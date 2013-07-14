@@ -38,7 +38,10 @@ class HourRow(models.Model):
         if len(items) == 0:
             return "N/A"
         items.sort(key=lambda x: -x[1])
-        return dir_text_map[items[0][0]]
+        try:
+            return dir_text_map[items[0][0]]
+        except KeyError:
+            return "N/A"
 
     def update(self):
         in_count, out_count = 0, 0

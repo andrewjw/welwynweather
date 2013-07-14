@@ -22,11 +22,11 @@ class ClimateByMonth(models.Model):
     rain_average = models.FloatField()
 
     cold_days_record = models.IntegerField()
-    cold_days_average = models.IntegerField()
+    cold_days_average = models.FloatField()
     hot_days_record = models.IntegerField()
-    hot_days_average = models.IntegerField()
+    hot_days_average = models.FloatField()
     days_of_rain_record = models.IntegerField()
-    days_of_rain_average = models.IntegerField()
+    days_of_rain_average = models.FloatField()
 
     @staticmethod
     def update(d):
@@ -53,11 +53,11 @@ class ClimateByMonth(models.Model):
         month.rain_record = max([m.rain for m in months])
         month.rain_average = sum([m.rain for m in months])/len(months)
 
-        month.cold_days_average = sum([m.cold_days for m in months])/len(months)
+        month.cold_days_average = sum([m.cold_days for m in months])/float(len(months))
         month.cold_days_record = max([m.cold_days for m in months])
-        month.hot_days_average = sum([m.hot_days for m in months])/len(months)
+        month.hot_days_average = sum([m.hot_days for m in months])/float(len(months))
         month.hot_days_record = max([m.hot_days for m in months])
-        month.days_of_rain_average = sum([m.rain_days for m in months])/len(months)
+        month.days_of_rain_average = sum([m.rain_days for m in months])/float(len(months))
         month.days_of_rain_record = max([m.rain_days for m in months])
 
         month.save()

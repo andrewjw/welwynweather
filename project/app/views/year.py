@@ -8,11 +8,11 @@ from app.models import DayRow, YearRow, ClimateByYear
 
 def year(req, year):
     try:
-        date = datetime(int(year), 1, 1)
+        date = datetime(int(year), 1, 1).replace(tzinfo=timezone.utc)
     except ValueError:
         raise Http404
 
-    next_year = datetime(int(year)+1, 1, 1)
+    next_year = datetime(int(year)+1, 1, 1).replace(tzinfo=timezone.utc)
 
     rows = DayRow.objects.filter(date__gte=date, date__lt=next_year)
 
@@ -40,9 +40,10 @@ def year(req, year):
     years = YearRow.objects.filter(date__lte=date, date__gte=datetime(2012, 1, 1).replace(tzinfo=timezone.utc))
     for yearobj in years:
         if yearobj.date.year == datetime.now().year:
-            days_in_year = (datetime(year, 12, 31) - datetime(year, 1, 1)).days
-            days_so_far = (datetime.now() - datetime(year, 1, 1)).days
+            days_in_year = (datetime(int(year), 12, 31) - datetime(int(year), 1, 1)).days
+            days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days
             yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
+            print yearobj.predicted_rain
 
     context = {
             "rows": rows,
@@ -56,8 +57,8 @@ def year(req, year):
             "wind_dir_list": [wind_dir.get(key, 0) for key in range(0, 16, 2)],
             "today": datetime.today(),
             "climate": ClimateByYear.objects.get(),
-            "year": YearRow.objects.get(date=date),
-            "years": years
+            "year": [y for y in years if y.date==date][0],
+            "years": years[::-1]
         }
 
     return render_to_response("html/year.html", context)

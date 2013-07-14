@@ -72,13 +72,17 @@
 <tr><td>Wind Gust</td><td>{{ year.max_wind_gust|floatformat:1 }} mph</td>
                         <td>{{ climate.wind_gust_record|floatformat:1 }} mph</td>
                         <td>{{ climate.wind_gust_average|floatformat:1 }} mph</td></tr>
-<tr><td>Rainfall</td><td>{{ year.rain|floatformat:1 }} mm</td>
+<tr><td>Rainfall</td><td>{{ year.rain|floatformat:1 }} mm
+            {% if year.predicted_rain %}<br>{{ year.predicted_rain|floatformat:1 }} mm*{% endif %}
+                        </td>
                         <td>{{ climate.rain_record|floatformat:1 }} mm</td>
                         <td>{{ climate.rain_average|floatformat:1 }} mm</td></tr>
 <tr><td>Days Of Rain</td><td>{{ year.rain_days }} days</td>
                         <td>{{ climate.days_of_rain_record }} days</td>
                         <td>{{ climate.days_of_rain_average|floatformat:1 }} days</td></tr>
 </table>
+
+<p>* predicted full year rainfall.</p>
 </div>
 <div id="tabs-3">
 <table width="100%" class="data_table">
@@ -93,10 +97,12 @@
 <tr><td>Hot Days (&gt;0<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.hot_days }}</td>{% endfor %}</tr>
 <tr><td>Wind Gust</td>{% for year in years %}<td>{{ year.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
 <tr><td>Rainfall</td>{% for year in years %}<td>{{ year.rain|floatformat:1 }} mm
-                                                {% if year.predicated_rain %}{{ year.predicated_rain|floatformat:1 }} mm{% endif %}
+                                                {% if year.predicted_rain %}<br>{{ year.predicted_rain|floatformat:1 }} mm*{% endif %}
                                             </td>{% endfor %}</tr>
 <tr><td>Days Of Rain</td>{% for year in years %}<td>{{ year.rain_days }}</td>{% endfor %}</tr>
 </table>
+
+<p>* predicted full year rainfall.</p>
 </div>
 </div>
 

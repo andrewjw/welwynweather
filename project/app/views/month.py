@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 
 from django.http import Http404
 from django.shortcuts import render_to_response
+from django.utils import timezone
 
 from app.models import HourRow, DayRow, MonthRow, ClimateByMonth
 
 def month(req, year, month):
     try:
-        date = datetime(int(year), int(month), 1)
+        date = datetime(int(year), int(month), 1).replace(tzinfo=timezone.utc)
     except ValueError:
         raise Http404
 
