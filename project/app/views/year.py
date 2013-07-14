@@ -43,7 +43,6 @@ def year(req, year):
             days_in_year = (datetime(int(year), 12, 31) - datetime(int(year), 1, 1)).days
             days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days
             yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
-            print yearobj.predicted_rain
 
     context = {
             "rows": rows,
