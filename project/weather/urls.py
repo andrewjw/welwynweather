@@ -12,8 +12,6 @@ urlpatterns = patterns('',
     url(r'^about$', 'app.views.about'),
     url(r'^records$', 'app.views.records'),
 
-    url(r'^electricity/?$', 'electricity.views.index'),
-    url(r'^electricity/(\d\d\d\d)/(\d\d?)/(\d\d?)$', 'electricity.views.day'),
     # Examples:
     # url(r'^$', 'weather.views.home', name='home'),
     # url(r'^weather/', include('weather.foo.urls')),
@@ -24,3 +22,13 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
+
+try:
+    import electricity
+except ImportError:
+    pass
+else:
+    urlpatterns += patterns('',
+       url(r'^electricity/?$', 'electricity.views.index'),
+       url(r'^electricity/(\d\d\d\d)/(\d\d?)/(\d\d?)$', 'electricity.views.day'),
+    )
