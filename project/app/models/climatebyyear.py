@@ -36,6 +36,9 @@ class ClimateByYear(models.Model):
 
         years = YearRow.objects.filter(date__gte=datetime(2012, 1, 1).replace(tzinfo=timezone.utc))
 
+        if years.count() == 0:
+            return
+
         year.max_temp_in_record = max([y.max_temp_in for y in years])
         year.min_temp_in_record = min([y.min_temp_in for y in years])
         year.max_temp_in_average = sum([y.max_temp_in for y in years])/len(years)
