@@ -5,6 +5,12 @@ from django.db import models
 class ClimateMonth(models.Model):
     month = models.IntegerField(primary_key=True)
 
+    avg_temp_in_record = models.FloatField()
+    avg_temp_in_average = models.FloatField()
+
+    avg_temp_out_record = models.FloatField()
+    avg_temp_out_average = models.FloatField()
+
     max_temp_in_record = models.FloatField()
     min_temp_in_record = models.FloatField()
     max_temp_in_average = models.FloatField()
@@ -41,6 +47,11 @@ class ClimateMonth(models.Model):
             month = ClimateMonth(month=d.date.month)
 
         days = DayRow.objects.filter(date__month=month.month)
+
+        month.avg_temp_in_record = max([d.avg_temp_in for d in days])
+        month.avg_temp_in_average = sum([d.avg_temp_in for d in days])/len(days)
+        month.avg_temp_out_record = max([d.avg_temp_out for d in days if d.avg_temp_out is not None])
+        month.avg_temp_out_average = sum([d.avg_temp_out for d in days if d.avg_temp_out is not None])/len([d for d in days if d.avg_temp_out is not None])
 
         max_temp_in = [d.max_temp_in for d in days]
         min_temp_in = [d.min_temp_in for d in days]

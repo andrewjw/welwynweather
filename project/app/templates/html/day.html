@@ -18,8 +18,8 @@
 <div id="tabs-1">
 <h3>Temperature</h3>
 
-<p>Outside: <b>Maximum:</b> {{ day.max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_out }}<sup>o</sup>C <b>Average:</b> {{ day.avg_temp_out }}<sup>o</sup>C</p>
-<p>Inside: <b>Maximum:</b> {{ day.max_temp_in }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_in }}<sup>o</sup>C <b>Average:</b> {{ day.avg_temp_in }}<sup>o</sup>C</p>
+<p>Outside: <b>Maximum:</b> {{ day.max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_out }}<sup>o</sup>C <b>Average:</b> {{ day.avg_temp_out|floatformat:1 }}<sup>o</sup>C</p>
+<p>Inside: <b>Maximum:</b> {{ day.max_temp_in }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_in }}<sup>o</sup>C <b>Average:</b> {{ day.avg_temp_in|floatformat:1 }}<sup>o</sup>C</p>
 
 <div id="tempchart_div"></div>
 

@@ -104,6 +104,7 @@ class DayRow(models.Model):
 
         self.save()
 
+        ClimateMonth.update(self)
         MonthRow.update(self)
 
     class Meta:
@@ -112,3 +113,4 @@ class DayRow(models.Model):
 
 from weatherrow import WeatherRow
 from monthrow import MonthRow
+from climatemonth import ClimateMonth
