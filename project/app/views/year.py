@@ -44,6 +44,8 @@ def year(req, year):
             days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days
             yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
 
+    year = [y for y in years if y.date==date][0]
+
     context = {
             "rows": rows,
             "date": date, "months": months,
@@ -53,10 +55,12 @@ def year(req, year):
             "max_temp_in": max([row.max_temp_in for row in rows]), "min_temp_in": min([row.min_temp_in for row in rows]),
             "max_temp_out": max([row.max_temp_out for row in rows if row.max_temp_out is not None]),
             "min_temp_out": min([row.min_temp_out for row in rows if row.min_temp_out is not None]),
+            "avg_temp_out": year.avg_temp_out,
+            "avg_temp_in": year.avg_temp_in,
             "wind_dir_list": [wind_dir.get(key, 0) for key in range(0, 16, 2)],
             "today": datetime.today(),
             "climate": ClimateByYear.objects.get(),
-            "year": [y for y in years if y.date==date][0],
+            "year": year,
             "years": years[::-1]
         }
 

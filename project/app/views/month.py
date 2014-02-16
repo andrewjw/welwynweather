@@ -44,6 +44,8 @@ def month(req, year, month):
 
         day += timedelta(days=1)
 
+    monthobj = MonthRow.objects.get(date=date)
+
     context = {
             "rows": rows,
             "date": date, "days": days,
@@ -55,10 +57,16 @@ def month(req, year, month):
             "max_hum_in": max([row.hum_in for row in rows]), "min_hum_in": min([row.hum_in for row in rows]),
             "max_hum_out": max([row.hum_out for row in rows if row.hum_out is not None]),
             "min_hum_out": min([row.hum_out for row in rows if row.hum_out is not None]),
+            "avg_temp_in": monthobj.avg_temp_in,
+            "avg_temp_out": monthobj.avg_temp_out,
+            "avg_max_temp_in": monthobj.avg_max_temp_in,
+            "avg_max_temp_out": monthobj.avg_max_temp_out,
+            "avg_min_temp_in": monthobj.avg_min_temp_in,
+            "avg_min_temp_out": monthobj.avg_min_temp_out,
             "wind_dir_list": [wind_dir.get(key, 0) for key in range(0, 16, 2)],
             "today": datetime.today(),
             "climate": ClimateByMonth.objects.get(month=int(month)),
-            "month": MonthRow.objects.get(date=date),
+            "month": monthobj,
             "months": MonthRow.objects.filter(date__lte=date, date__month=int(month))[::-1]
         }
 

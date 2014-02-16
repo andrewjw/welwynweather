@@ -4,15 +4,29 @@ from django.db import models
 from django.utils import timezone
 
 class ClimateByYear(models.Model):
+    avg_temp_in_record = models.FloatField()
+    avg_temp_in_average = models.FloatField()
+
     max_temp_in_record = models.FloatField()
     min_temp_in_record = models.FloatField()
     max_temp_in_average = models.FloatField()
     min_temp_in_average = models.FloatField()
+    avg_max_temp_in_record = models.FloatField()
+    avg_min_temp_in_record = models.FloatField()
+    avg_max_temp_in_average = models.FloatField()
+    avg_min_temp_in_average = models.FloatField()
+
+    avg_temp_out_record = models.FloatField()
+    avg_temp_out_average = models.FloatField()
 
     max_temp_out_record = models.FloatField()
     min_temp_out_record = models.FloatField()
     max_temp_out_average = models.FloatField()
     min_temp_out_average = models.FloatField()
+    avg_max_temp_out_record = models.FloatField()
+    avg_min_temp_out_record = models.FloatField()
+    avg_max_temp_out_average = models.FloatField()
+    avg_min_temp_out_average = models.FloatField()
 
     wind_gust_record = models.FloatField(null=True, blank=True)
     wind_gust_average = models.FloatField(null=True, blank=True)
@@ -39,10 +53,24 @@ class ClimateByYear(models.Model):
         if years.count() == 0:
             return
 
+        year.avg_temp_in_record = max([y.avg_temp_in for y in years])
+        year.avg_temp_in_average = sum([y.avg_temp_in for y in years])/len(years)
+        year.avg_max_temp_in_record = max([y.avg_max_temp_in for y in years])
+        year.avg_max_temp_in_average = sum([y.avg_max_temp_in for y in years])/len(years)
+        year.avg_min_temp_in_record = max([y.avg_min_temp_in for y in years])
+        year.avg_min_temp_in_average = sum([y.avg_min_temp_in for y in years])/len(years)
+
         year.max_temp_in_record = max([y.max_temp_in for y in years])
         year.min_temp_in_record = min([y.min_temp_in for y in years])
         year.max_temp_in_average = sum([y.max_temp_in for y in years])/len(years)
         year.min_temp_in_average = sum([y.min_temp_in for y in years])/len(years)
+
+        year.avg_temp_out_record = max([y.avg_temp_out for y in years])
+        year.avg_temp_out_average = sum([y.avg_temp_out for y in years])/len(years)
+        year.avg_max_temp_out_record = max([y.avg_max_temp_out for y in years])
+        year.avg_max_temp_out_average = sum([y.avg_max_temp_out for y in years])/len(years)
+        year.avg_min_temp_out_record = max([y.avg_min_temp_out for y in years])
+        year.avg_min_temp_out_average = sum([y.avg_min_temp_out for y in years])/len(years)
 
         year.max_temp_out_record = max([y.max_temp_out for y in years])
         year.min_temp_out_record = min([y.min_temp_out for y in years])

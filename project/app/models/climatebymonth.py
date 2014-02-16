@@ -5,15 +5,29 @@ from django.db import models
 class ClimateByMonth(models.Model):
     month = models.IntegerField(primary_key=True)
 
+    avg_temp_in_record = models.FloatField()
+    avg_temp_in_average = models.FloatField()
+
     max_temp_in_record = models.FloatField()
     min_temp_in_record = models.FloatField()
     max_temp_in_average = models.FloatField()
     min_temp_in_average = models.FloatField()
+    avg_max_temp_in_record = models.FloatField()
+    avg_min_temp_in_record = models.FloatField()
+    avg_max_temp_in_average = models.FloatField()
+    avg_min_temp_in_average = models.FloatField()
+
+    avg_temp_out_record = models.FloatField()
+    avg_temp_out_average = models.FloatField()
 
     max_temp_out_record = models.FloatField()
     min_temp_out_record = models.FloatField()
     max_temp_out_average = models.FloatField()
     min_temp_out_average = models.FloatField()
+    avg_max_temp_out_record = models.FloatField()
+    avg_min_temp_out_record = models.FloatField()
+    avg_max_temp_out_average = models.FloatField()
+    avg_min_temp_out_average = models.FloatField()
 
     wind_gust_record = models.FloatField(null=True, blank=True)
     wind_gust_average = models.FloatField(null=True, blank=True)
@@ -37,15 +51,33 @@ class ClimateByMonth(models.Model):
 
         months = MonthRow.objects.filter(date__month=month.month)
 
+        if len(months) == 0:
+            return
+
+        month.avg_temp_in_record = max([m.avg_temp_in for m in months])
+        month.avg_temp_in_average = sum([m.avg_temp_in for m in months])/len(months)
+        month.avg_temp_out_record = max([m.avg_temp_out for m in months])
+        month.avg_temp_out_average = sum([m.avg_temp_out for m in months])/len(months)
+
         month.max_temp_in_record = max([m.max_temp_in for m in months])
         month.min_temp_in_record = min([m.min_temp_in for m in months])
         month.max_temp_in_average = sum([m.max_temp_in for m in months])/len(months)
         month.min_temp_in_average = sum([m.min_temp_in for m in months])/len(months)
 
+        month.avg_max_temp_in_record = max([m.avg_max_temp_in for m in months])
+        month.avg_min_temp_in_record = min([m.avg_min_temp_in for m in months])
+        month.avg_max_temp_in_average = sum([m.avg_max_temp_in for m in months])/len(months)
+        month.avg_min_temp_in_average = sum([m.avg_min_temp_in for m in months])/len(months)
+
         month.max_temp_out_record = max([m.max_temp_out for m in months])
         month.min_temp_out_record = min([m.min_temp_out for m in months])
         month.max_temp_out_average = sum([m.max_temp_out for m in months])/len(months)
         month.min_temp_out_average = sum([m.min_temp_out for m in months])/len(months)
+
+        month.avg_max_temp_out_record = max([m.avg_max_temp_out for m in months])
+        month.avg_min_temp_out_record = min([m.avg_min_temp_out for m in months])
+        month.avg_max_temp_out_average = sum([m.avg_max_temp_out for m in months])/len(months)
+        month.avg_min_temp_out_average = sum([m.avg_min_temp_out for m in months])/len(months)
 
         month.wind_gust_record = max([m.max_wind_gust for m in months])
         month.wind_gust_average = sum([m.max_wind_gust for m in months])/len(months)

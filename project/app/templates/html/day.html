@@ -18,8 +18,8 @@
 <div id="tabs-1">
 <h3>Temperature</h3>
 
-<p>Outside: <b>Maximum:</b> {{ day.max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_out }}<sup>o</sup>C</p>
-<p>Inside: <b>Maximum:</b> {{ day.max_temp_in }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_in }}<sup>o</sup>C</p>
+<p>Outside: <b>Maximum:</b> {{ day.max_temp_out }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_out }}<sup>o</sup>C <b>Average:</b> {{ day.avg_temp_out }}<sup>o</sup>C</p>
+<p>Inside: <b>Maximum:</b> {{ day.max_temp_in }}<sup>o</sup>C <b>Minimum:</b> {{ day.min_temp_in }}<sup>o</sup>C <b>Average:</b> {{ day.avg_temp_in }}<sup>o</sup>C</p>
 
 <div id="tempchart_div"></div>
 
@@ -84,12 +84,18 @@
 <thead>
     <tr><th>&nbsp;</th><th>{{ date|date:"d F Y" }}</th><th>{{ date|date:"F" }} Record</th><th>{{ date|date:"F" }} Average</th></tr>
 </thead>
+<tr><td>Indoor Average</td><td>{{ day.avg_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Indoor High</td><td>{{ day.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Indoor Low</td><td>{{ day.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Average</td><td>{{ day.avg_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside High</td><td>{{ day.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
@@ -112,8 +118,10 @@
 <thead>
     <tr><th>&nbsp;</th>{% for day in on_this_day %}<th>{{ day.date.year }}</th>{% endfor %}</tr>
 </thead>
+<tr><td>Indoor Average</td>{% for day in on_this_day %}<td>{{ day.avg_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Indoor High</td>{% for day in on_this_day %}<td>{{ day.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Indoor Low</td>{% for day in on_this_day %}<td>{{ day.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Average</td>{% for day in on_this_day %}<td>{{ day.avg_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside High</td>{% for day in on_this_day %}<td>{{ day.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Low</td>{% for day in on_this_day %}<td>{{ day.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Wind Gust</td>{% for day in on_this_day %}<td>{{ day.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>

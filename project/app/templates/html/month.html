@@ -19,8 +19,8 @@
 <div id="tabs-1">
 <h3>Temperature</h3>
 
-<p>Outside: <b>Maximum:</b> {{ max_temp_out|floatformat:1 }}<sup>o</sup>C <b>Minimum:</b> {{ min_temp_out|floatformat:1 }}<sup>o</sup>C</p>
-<p>Inside: <b>Maximum:</b> {{ max_temp_in|floatformat:1 }}<sup>o</sup>C <b>Minimum:</b> {{ min_temp_in|floatformat:1 }}<sup>o</sup>C</p>
+<p>Outside: <b>Maximum:</b> {{ max_temp_out|floatformat:1 }}<sup>o</sup>C <b>Minimum:</b> {{ min_temp_out|floatformat:1 }}<sup>o</sup>C  <b>Average:</b> {{ avg_temp_out|floatformat:1 }}<sup>o</sup>C <b>Average High:</b> {{ avg_max_temp_out|floatformat:1 }}<sup>o</sup>C <b>Average Low:</b> {{ avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</p>
+<p>Inside: <b>Maximum:</b> {{ max_temp_in|floatformat:1 }}<sup>o</sup>C <b>Minimum:</b> {{ min_temp_in|floatformat:1 }}<sup>o</sup>C <b>Average:</b> {{ avg_temp_in|floatformat:1 }}<sup>o</sup>C <b>Average High:</b> {{ avg_max_temp_in|floatformat:1 }}<sup>o</sup>C <b>Average Low:</b> {{ avg_min_temp_in|floatformat:1 }}<sup>o</sup>C</p>
 
 <div id="tempchart_div"></div>
 
@@ -55,15 +55,33 @@
 <thead>
     <tr><th>&nbsp;</th><th>{{ date|date:"F Y" }}</th><th>{{ date|date:"F" }} Record</th><th>{{ date|date:"F" }} Average</th></tr>
 </thead>
+<tr><td>Indoor Average</td><td>{{ month.avg_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Indoor Record High</td><td>{{ month.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Indoor Average High</td><td>{{ month.avg_max_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_max_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_max_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Indoor Average Low</td><td>{{ month.avg_min_temp_in|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_min_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_min_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Indoor Record Low</td><td>{{ month.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_in_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_in_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Average</td><td>{{ month.avg_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Record High</td><td>{{ month.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Average High</td><td>{{ month.avg_max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Average Low</td><td>{{ month.avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.avg_min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Record Low</td><td>{{ month.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
@@ -89,12 +107,18 @@
 <thead>
     <tr><th>&nbsp;</th>{% for month in months %}<th>{{ month.date.year }}</th>{% endfor %}</tr>
 </thead>
+<tr><td>Indoor Average</td>{% for month in months %}<td>{{ month.avg_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Indoor High</td>{% for month in months %}<td>{{ month.max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Indoor Average High</td>{% for month in months %}<td>{{ month.avg_max_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Indoor Average Low</td>{% for month in months %}<td>{{ month.avg_min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Indoor Low</td>{% for month in months %}<td>{{ month.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Average</td>{% for month in months %}<td>{{ month.avg_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside High</td>{% for month in months %}<td>{{ month.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Average High</td>{% for month in months %}<td>{{ month.avg_max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Average Low</td>{% for month in months %}<td>{{ month.avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Low</td>{% for month in months %}<td>{{ month.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Cold Days (&lt;0<sup>o</sup>C)</td>{% for month in months %}<td>{{ month.cold_days|floatformat:1 }}</td>{% endfor %}</tr>
-<tr><td>Hot Days (&gt;0<sup>o</sup>C)</td>{% for month in months %}<td>{{ month.hot_days|floatformat:1 }}</td>{% endfor %}</tr>
+<tr><td>Hot Days (&gt;27<sup>o</sup>C)</td>{% for month in months %}<td>{{ month.hot_days|floatformat:1 }}</td>{% endfor %}</tr>
 <tr><td>Wind Gust</td>{% for month in months %}<td>{{ month.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
 <tr><td>Rainfall</td>{% for month in months %}<td>{{ month.rain|floatformat:1 }} mm</td>{% endfor %}</tr>
 <tr><td>Days Of Rain</td>{% for month in months %}<td>{{ month.rain_days|floatformat:1 }}</td>{% endfor %}</tr>

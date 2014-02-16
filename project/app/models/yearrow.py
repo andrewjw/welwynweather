@@ -7,6 +7,14 @@ from monthrow import MonthRow
 class YearRow(models.Model):
     date = models.DateTimeField(primary_key=True)
 
+    avg_temp_in = models.FloatField()
+    avg_temp_out = models.FloatField()
+
+    avg_max_temp_in = models.FloatField()
+    avg_min_temp_in = models.FloatField()
+    avg_max_temp_out = models.FloatField()
+    avg_min_temp_out = models.FloatField()
+
     max_hum_in = models.FloatField()
     min_hum_in = models.FloatField()
     max_temp_in = models.FloatField()
@@ -35,7 +43,15 @@ class YearRow(models.Model):
 
         next_year = date.replace(year=date.year+1)
 
+        days = DayRow.objects.filter(date__gte=date, date__lt=next_year)
         months = MonthRow.objects.filter(date__gte=date, date__lt=next_year)
+
+        y.avg_temp_in = sum([d.avg_temp_in for d in days])/len(days)
+        y.avg_temp_out = sum([d.avg_temp_out for d in days])/len(days)
+        y.avg_max_temp_in = sum([d.max_temp_in for d in days])/len(days)
+        y.avg_min_temp_in = sum([d.min_temp_in for d in days])/len(days)
+        y.avg_max_temp_out = sum([d.max_temp_out for d in days if d.max_temp_out is not None])/len(days)
+        y.avg_min_temp_out = sum([d.min_temp_out for d in days if d.max_temp_out is not None])/len(days)
 
         y.max_hum_in = max([m.max_hum_in for m in months])
         y.min_hum_in = min([m.min_hum_in for m in months])
@@ -63,3 +79,5 @@ class YearRow(models.Model):
         app_label = "app"
 
 from climatebyyear import ClimateByYear
+from weatherrow import WeatherRow
+from dayrow import DayRow
