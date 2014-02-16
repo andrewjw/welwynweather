@@ -1,0 +1,6 @@
+from django.db import models
+
+class Monthly(models.Model):
+    date = models.DateTimeField(primary_key=True)
+
+    kwh = models.FloatField()
