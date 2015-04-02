@@ -59,22 +59,23 @@ class MonthRow(models.Model):
         m.avg_max_temp_in = sum([d.max_temp_in for d in days])/len(days)
         m.avg_min_temp_in = sum([d.min_temp_in for d in days])/len(days)
 
-        m.max_hum_out = max([d.max_hum_out for d in days if d.max_hum_out is not None])
-        m.min_hum_out = min([d.min_hum_out for d in days if d.min_hum_out is not None])
-        m.max_temp_out = max([d.max_temp_out for d in days if d.max_temp_out is not None])
-        m.min_temp_out = min([d.min_temp_out for d in days if d.min_temp_out is not None])
+        if len([d.max_hum_out for d in days if d.max_hum_out is not None]) > 0:
+            m.max_hum_out = max([d.max_hum_out for d in days if d.max_hum_out is not None])
+            m.min_hum_out = min([d.min_hum_out for d in days if d.min_hum_out is not None])
+            m.max_temp_out = max([d.max_temp_out for d in days if d.max_temp_out is not None])
+            m.min_temp_out = min([d.min_temp_out for d in days if d.min_temp_out is not None])
 
-        m.avg_temp_out = sum([row.temp_out for row in rows if row.contact])/len([r for r in rows if r.contact])
-        m.avg_max_temp_out = sum([d.max_temp_out for d in days if d.max_temp_out is not None])/len(days)
-        m.avg_min_temp_out = sum([d.min_temp_out for d in days if d.min_temp_out is not None])/len(days)
+            m.avg_temp_out = sum([row.temp_out for row in rows if row.contact])/len([r for r in rows if r.contact])
+            m.avg_max_temp_out = sum([d.max_temp_out for d in days if d.max_temp_out is not None])/len(days)
+            m.avg_min_temp_out = sum([d.min_temp_out for d in days if d.min_temp_out is not None])/len(days)
 
-        m.max_wind_gust = max([d.max_wind_gust for d in days])
+            m.max_wind_gust = max([d.max_wind_gust for d in days])
 
-        m.rain = sum([d.rain for d in days])
+            m.rain = sum([d.rain for d in days])
 
-        m.hot_days = len([d for d in days if d.max_temp_out > 27])
-        m.cold_days = len([d for d in days if d.min_temp_out is not None and d.min_temp_out < 0])
-        m.rain_days = len([d for d in days if d.rain > 0])
+            m.hot_days = len([d for d in days if d.max_temp_out > 27])
+            m.cold_days = len([d for d in days if d.min_temp_out is not None and d.min_temp_out < 0])
+            m.rain_days = len([d for d in days if d.rain > 0])
 
         m.save()
 
