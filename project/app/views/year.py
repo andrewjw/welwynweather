@@ -44,6 +44,8 @@ def year(req, year):
             days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days
             yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
 
+    if len([y for y in years if y.date==date]) == 0:
+        raise Http404
     year = [y for y in years if y.date==date][0]
 
     context = {
