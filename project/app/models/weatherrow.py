@@ -37,7 +37,7 @@ class WeatherRow(models.Model):
     
     @property
     def contact(self):
-        return self.status & 64 == 0
+        return self.status & 64 == 0 and self.temp_out is not None
     
     def get_hour(self):
         try:
