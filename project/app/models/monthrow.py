@@ -5,7 +5,7 @@ from django.db import models
 from dayrow import DayRow
 
 class MonthRow(models.Model):
-    date = models.DateTimeField(primary_key=True)
+    date = models.DateField(primary_key=True)
     timestamp = models.IntegerField(),
     delay = models.IntegerField(null=True, blank=True)
 
@@ -18,22 +18,26 @@ class MonthRow(models.Model):
     max_temp_in = models.FloatField()
     min_temp_in = models.FloatField()
 
-    avg_temp_out = models.FloatField()
-    avg_max_temp_out = models.FloatField()
-    avg_min_temp_out = models.FloatField()
+    avg_temp_out = models.FloatField(null=True, blank=True)
+    avg_max_temp_out = models.FloatField(null=True, blank=True)
+    avg_min_temp_out = models.FloatField(null=True, blank=True)
 
-    max_hum_out = models.FloatField()
-    min_hum_out = models.FloatField()
-    max_temp_out = models.FloatField()
-    min_temp_out = models.FloatField()
+    max_hum_out = models.FloatField(null=True, blank=True)
+    min_hum_out = models.FloatField(null=True, blank=True)
+    max_temp_out = models.FloatField(null=True, blank=True)
+    min_temp_out = models.FloatField(null=True, blank=True)
 
-    max_wind_gust = models.FloatField()
+    max_wind_gust = models.FloatField(null=True, blank=True)
 
-    rain = models.FloatField()
+    rain = models.FloatField(null=True, blank=True)
 
     hot_days = models.IntegerField()
     cold_days = models.IntegerField()
     rain_days = models.IntegerField()
+
+    data_quality = models.FloatField()
+    good_rows = models.IntegerField()
+    bad_rows = models.IntegerField()
 
     @staticmethod
     def update(d):
@@ -59,6 +63,10 @@ class MonthRow(models.Model):
         m.avg_max_temp_in = sum([d.max_temp_in for d in days])/len(days)
         m.avg_min_temp_in = sum([d.min_temp_in for d in days])/len(days)
 
+        m.hot_days = 0
+        m.cold_days = 0
+        m.rain_days = 0
+
         if len([d.max_hum_out for d in days if d.max_hum_out is not None]) > 0:
             m.max_hum_out = max([d.max_hum_out for d in days if d.max_hum_out is not None])
             m.min_hum_out = min([d.min_hum_out for d in days if d.min_hum_out is not None])
@@ -77,10 +85,14 @@ class MonthRow(models.Model):
             m.cold_days = len([d for d in days if d.min_temp_out is not None and d.min_temp_out < 0])
             m.rain_days = len([d for d in days if d.rain > 0])
 
-        m.save()
+        count = rows.count()
+        good = len([r for r in rows if r.contact])
 
-        ClimateByMonth.update(d)
-        YearRow.update(d)
+        m.data_quality = 100.0 * good/count
+        m.good_rows = good
+        m.bad_rows = count - good
+
+        m.save()
 
     class Meta:
         app_label = "app"

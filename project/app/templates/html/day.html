@@ -1,12 +1,12 @@
 {% extends "html/base.html" %}
 
 {% block content %}
-<h2>{% if yesterday %}<a href="{% url app.views.day yesterday.year yesterday.month yesterday.day %}">&lt;&lt;</a>{% endif %}
+<h2>{% if yesterday %}<a href="{% url 'day' yesterday.year yesterday.month yesterday.day %}">&lt;&lt;</a>{% endif %}
     {{ date|date:"l" }}
-    <a href="{% url app.views.month date.year date.month %}">{{ date|date:"F" }}</a>
+    <a href="{% url 'month' date.year date.month %}">{{ date|date:"F" }}</a>
     {{ date.day }},
-    <a href="{% url app.views.year date.year %}">{{ date.year }}</a>
-    {% if tomorrow %}<a href="{% url app.views.day tomorrow.year tomorrow.month tomorrow.day %}">&gt;&gt;</a>{% endif %}</h2>
+    <a href="{% url 'year' date.year %}">{{ date.year }}</a>
+    {% if tomorrow %}<a href="{% url 'day' tomorrow.year tomorrow.month tomorrow.day %}">&gt;&gt;</a>{% endif %}</h2>
 
 <div id="tabs">
 <ul>

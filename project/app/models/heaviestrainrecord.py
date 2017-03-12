@@ -1,28 +1,18 @@
 from django.db import models
 
+from app.models import HourRow
+
 class HeaviestRainRecord(models.Model):
     date = models.DateTimeField(primary_key=True)
 
     rain = models.FloatField()
 
     @staticmethod
-    def update(row):
-        if row.rain == 0:
-            return
+    def update():
+        HeaviestRainRecord.objects.all().delete()
 
-        hour = HeaviestRainRecord.objects.filter(date=row.date)
-        if len(hour) > 0:
-            if hour[0].rain < row.rain:
-                hour[0].rain = row.rain
-                hour[0].save()
-        elif HeaviestRainRecord.objects.all().count() < 5:
-            HeaviestRainRecord(date=row.date, rain=row.rain).save()
-        else:
-            record = HeaviestRainRecord.objects.all().order_by("rain")[0]
-
-            if row.rain > record.rain:
-                HeaviestRainRecord(date=row.date, rain=row.rain).save()
-                [r.delete() for r in HeaviestRainRecord.objects.all()[5:]]
+        for hour in HourRow.objects.order_by("-rain")[:5]:
+            HeaviestRainRecord(date=hour.date, rain=hour.rain).save()
 
     class Meta:
         app_label = "app"

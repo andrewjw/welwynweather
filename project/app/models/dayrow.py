@@ -1,9 +1,11 @@
 from datetime import timedelta
 
+from django.conf import settings
+
 from django.db import models
 
 class DayRow(models.Model):
-    date = models.DateTimeField(primary_key=True)
+    date = models.DateField(primary_key=True)
 
     avg_temp_in = models.FloatField()
     avg_temp_out = models.FloatField()
@@ -21,6 +23,9 @@ class DayRow(models.Model):
     abs_pressure = models.FloatField()
     wind_ave = models.FloatField(null=True, blank=True)
     max_wind_gust = models.FloatField(null=True, blank=True)
+    max_wind_gust_at = models.DateTimeField(null=True, blank=True)
+    max_wind_ave = models.FloatField(null=True, blank=True)
+    max_wind_ave_at = models.DateTimeField(null=True, blank=True)
     wind_dir = models.TextField(max_length=255)
 
     rain = models.FloatField()
@@ -28,6 +33,10 @@ class DayRow(models.Model):
     rained = models.BooleanField()
 
     status = models.IntegerField()
+
+    data_quality = models.FloatField()
+    good_rows = models.IntegerField()
+    bad_rows = models.IntegerField()
 
     @property
     def wind_dir_list(self):
@@ -54,7 +63,7 @@ class DayRow(models.Model):
         self.rain = 0
         self.status = 0
 
-        count = 0
+        count, good = 0, 0
         for row in WeatherRow.objects.filter(date__gte=self.date, date__lt=self.date + timedelta(seconds=24*60*60)):
             count += 1
             if first_in:
@@ -69,10 +78,16 @@ class DayRow(models.Model):
                 self.min_temp_in = min(self.min_temp_in, row.temp_in)
                 temp_in += row.temp_in
 
+            if row.contact:
+                good += 1
+
             if row.contact and first_out:
                 self.max_hum_out, self.min_hum_out = row.hum_out, row.hum_out
                 self.max_temp_out, self.min_temp_out = row.temp_out, row.temp_out
                 self.max_wind_gust = row.wind_gust
+                self.max_wind_gust_at = row.date
+                self.max_wind_ave = row.wind_ave
+                self.max_wind_ave_at = row.date
                 temp_out = row.temp_out
                 first_out = False
             elif row.contact:
@@ -80,7 +95,10 @@ class DayRow(models.Model):
                 self.min_hum_out = min(self.min_hum_out, row.hum_out)
                 self.max_temp_out = max(self.max_temp_out, row.temp_out)
                 self.min_temp_out = min(self.min_temp_out, row.temp_out)
-                self.max_wind_gust = max(self.max_wind_gust, row.wind_gust)
+                self.max_wind_gust_at = row.date if self.max_wind_gust < row.wind_gust else self.max_wind_gust_at
+                self.max_wind_gust = row.wind_gust if self.max_wind_gust < row.wind_gust else self.max_wind_gust
+                self.max_wind_ave_at = row.date if self.max_wind_ave < row.wind_ave else self.max_wind_ave_at
+                self.max_wind_ave = row.wind_ave if self.max_wind_ave < row.wind_ave else self.max_wind_ave
                 temp_out += row.temp_out
 
             pressure.append(row.abs_pressure)
@@ -101,11 +119,17 @@ class DayRow(models.Model):
             self.wind_ave = None
         self.wind_dir = str(wind_dir)
         self.rained = self.rain > 0
+        self.data_quality = 100.0 * good / count
+        self.good_rows = good
+        self.bad_rows = count - good
+
+        for update in settings.DAY_ROW:
+            if self.date == update["day"]:
+                update["func"](self)
 
         self.save()
 
-        ClimateMonth.update(self)
-        MonthRow.update(self)
+        return self
 
     class Meta:
         app_label = "app"

@@ -1,3 +1,4 @@
+import cProfile
 import csv
 import datetime
 import glob
@@ -7,22 +8,46 @@ import time
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.timezone import utc
+from django.conf import settings
 
 from app.models import WeatherRow, HighestTemperatureRecord, LowestTemperatureRecord
 from app.models import DriestPeriodRecord, WettestPeriodRecord, WettestDayRecord
 from app.models import ColdestPeriodRecord, WarmestPeriodRecord
-from app.models import ClimateMonth
+from app.models import ClimateMonth, DayRow, HeaviestRainRecord, HourRow
+from app.models import StrongestWindRecord, StrongestGustRecord, HighestPressureRecord, LowestPressureRecord
+from app.models import MonthRow, ClimateByMonth, YearRow, ClimateByYear
 
 class Command(BaseCommand):
-    def handle(self, **options):
-        do_import("/home/andrew/weather/data/raw/")
+    def handle(self, *args, **options):
+        #p = cProfile.Profile()
+        #p.runcall(do_import, options["path"][0] if options["path"] else "/home/andrew/weather/data/raw/")
+        #p.print_stats("cumulative")
+        do_import(options["path"][0] if options["path"] else "/home/andrew/weather/data/raw/")
+
+    def add_arguments(self, parser):
+        parser.add_argument('path', nargs='+', type=str, default=None)
 
 def do_import(data_dir):
     all_years = sorted(glob.glob(data_dir + os.sep + "*"))
 
     last_update = get_last_update()
 
-    [import_year(data_dir, last_update, y.split("/")[-1]) for y in sorted(all_years) if int(y.split("/")[-1]) >= last_update.year]
+    for y in sorted(all_years):
+        if int(y.split("/")[-1]) >= last_update.year:
+            import_year(data_dir, last_update, y.split("/")[-1])
+
+    StrongestWindRecord.update()
+    StrongestGustRecord.update()
+    HighestPressureRecord.update()
+    LowestPressureRecord.update()
+    HeaviestRainRecord.update()
+    HighestTemperatureRecord.update()
+    LowestTemperatureRecord.update()
+    DriestPeriodRecord.update()
+    WettestPeriodRecord.update()
+    WettestDayRecord.update()
+    ColdestPeriodRecord.update()
+    WarmestPeriodRecord.update()
 
 def import_year(data_dir, last_update, year):
     all_months = sorted(glob.glob(data_dir + os.sep + year + os.sep + "*"))
@@ -32,45 +57,61 @@ def import_year(data_dir, last_update, year):
     else:
         months = [m.split("/")[-1] for m in all_months]
 
-    [import_month(data_dir, last_update, m.split("-")[0], m.split("-")[1]) for m in months]
+    for m in months:
+        last_day = import_month(data_dir, last_update, m.split("-")[0], m.split("-")[1])
+
+    if last_day is not None:
+        YearRow.update(last_day)
+        ClimateByYear.update(last_day)
 
 def import_month(data_dir, last_update, year, month):
-    all_days = sorted(glob.glob(data_dir + os.sep + year + os.sep + year + "-" + month + os.sep + "*"))
+    all_filenames = sorted(glob.glob(data_dir + os.sep + year + os.sep + year + "-" + month + os.sep + "*"))
 
     if int(year) == last_update.year and int(month) == last_update.month:
-        days = [d for d in all_days if d.split("/")[-1] >= last_update.strftime("%Y-%m-%d.txt")]
+        filenames = [d for d in all_filenames if d.split("/")[-1] >= last_update.strftime("%Y-%m-%d.txt")]
     else:
-        days = all_days
+        filenames = all_filenames
 
-    [import_day(filename, last_update) for filename in days]
+    for filename in filenames:
+        last_day = import_day(filename, last_update)
+
+    if last_day is not None:
+        MonthRow.update(last_day)
+        ClimateMonth.update(last_day)
+        ClimateByMonth.update(last_day)
+
+    return last_day
 
 def import_day(filename, last_update):
     fp = csv.reader(open(filename, "r"))
 
-    first_day = True
-
+    obj = None
     print filename
+    hours = set()
+
+    prev_rain = get_last_rain(last_update)
+
     for row in fp:
         update = datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S").replace(tzinfo=utc)
+        day = update.date()
         if update <= last_update:
             continue
 
-        prev_rain = get_last_rain(update)
         if prev_rain is not None:
             rain = float(row[10]) - prev_rain if row[10] != '' else 0
-            raw_rain = float(row[10]) if row[10] != '' else 0
         else:
             rain = 0
-            raw_rain = 0
+
+        raw_rain = float(row[10]) if row[10] != '' else 0
+        prev_rain = raw_rain if raw_rain != 0 else prev_rain
 
         if rain is not None and (rain < 0 or rain > 10):
             rain = 0
 
-        try:
-            obj = WeatherRow.objects.get(date=update)
-        except WeatherRow.DoesNotExist:
-            obj = WeatherRow(date=update)
-        
+        obj = WeatherRow(date=update)
+
+        hours.add(obj.get_hour_time())
+
         obj.timestamp = totimestamp(update)
         obj.delay = int(row[1]) if row[1] != '' else None
         obj.hum_in = float(row[2]) if row[2] != '' else None
@@ -82,22 +123,24 @@ def import_day(filename, last_update):
         obj.wind_gust = float(row[8]) if row[8] != '' else None
         obj.wind_dir = int(row[9]) if row[9] != '' else None
         obj.rain = rain
+        obj.is_raining = rain > 0
         obj.status = int(row[11]) if row[11] else None
         obj.raw_rain = raw_rain
 
+        for update_spec in settings.RAW_DATA:
+            if update >= update_spec["start"] and update < update_spec["end"]:
+                update_spec["func"](obj)
+
         obj.save()
-        
-        if first_day:
-            d = obj.get_day().prev_day()
-            if d != None:
-                HighestTemperatureRecord.update(d)
-                LowestTemperatureRecord.update(d)
-                DriestPeriodRecord.update(d)
-                WettestPeriodRecord.update(d)
-                WettestDayRecord.update(d)
-                ColdestPeriodRecord.update(d)
-                WarmestPeriodRecord.update(d)
-                ClimateMonth.update(d)
+
+    for hour in hours:
+        try:
+            hourobj = HourRow.objects.get(date=hour)
+        except HourRow.DoesNotExist:
+            hourobj = HourRow(date=hour)
+        hourobj.update()
+
+    return None if obj is None else obj.get_day().update()
 
 def get_last_update():
     try:
@@ -106,11 +149,11 @@ def get_last_update():
         return datetime.datetime(1900, 1, 1, tzinfo=utc)
 
 def get_last_rain(date):
-    last_update = WeatherRow.objects.filter(date__lt=date).order_by("-date")
-    
+    last_update = WeatherRow.objects.filter(date__lte=date).order_by("-date")
+
     if last_update.count() == 0:
         return None
-        
+
     return last_update[0].raw_rain
 
 def totimestamp(dt):

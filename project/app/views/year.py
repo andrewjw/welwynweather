@@ -1,32 +1,33 @@
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.utils import timezone
+from django.utils.timezone import utc
 
 from app.models import DayRow, YearRow, ClimateByYear
 
 def year(req, year):
     try:
-        date = datetime(int(year), 1, 1).replace(tzinfo=timezone.utc)
+        d = date(int(year), 1, 1, tzinfo=utc)
     except ValueError:
         raise Http404
 
-    next_year = datetime(int(year)+1, 1, 1).replace(tzinfo=timezone.utc)
+    next_year = date(int(year)+1, 1, 1)
 
-    rows = DayRow.objects.filter(date__gte=date, date__lt=next_year)
+    rows = DayRow.objects.filter(date__gte=d, date__lt=next_year)
 
     if len(rows) == 0:
         raise Http404
 
-    prev_year = date - timedelta(days=1)
+    prev_year = d - timedelta(days=1)
 
     wind_dir = {}
     for row in rows:
         for (key, value) in eval(row.wind_dir).items():
             wind_dir[key] = wind_dir.get(key, 0) + value
 
-    month = date
+    month = d
     months = []
     while month.year == date.year:
         if DayRow.objects.filter(date__year=month.year, date__month=month.month).count() > 0:
@@ -37,20 +38,20 @@ def year(req, year):
             next_month += timedelta(days=1)
         month = next_month
 
-    years = YearRow.objects.filter(date__lte=date, date__gte=datetime(2012, 1, 1).replace(tzinfo=timezone.utc))
+    years = YearRow.objects.filter(date__lte=d, date__gte=date(2012, 1, 1))
     for yearobj in years:
-        if yearobj.date.year == datetime.now().year:
+        if yearobj.date.year == date.today().year:
             days_in_year = (datetime(int(year), 12, 31) - datetime(int(year), 1, 1)).days
             days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days
             yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
 
-    if len([y for y in years if y.date==date]) == 0:
+    if len([y for y in years if y.date==d]) == 0:
         raise Http404
-    year = [y for y in years if y.date==date][0]
+    year = [y for y in years if y.date==d][0]
 
     context = {
             "rows": rows,
-            "date": date, "months": months,
+            "date": d, "months": months,
             "total_rain": sum([row.rain for row in rows]),
             "prev_year": prev_year if DayRow.objects.filter(date__year=prev_year.year).count() else None,
             "next_year": next_year if DayRow.objects.filter(date__year=next_year.year).count() else None,
@@ -60,7 +61,7 @@ def year(req, year):
             "avg_temp_out": year.avg_temp_out,
             "avg_temp_in": year.avg_temp_in,
             "wind_dir_list": [wind_dir.get(key, 0) for key in range(0, 16, 2)],
-            "today": datetime.today(),
+            "today": date.today(),
             "climate": ClimateByYear.objects.get(),
             "year": year,
             "years": years[::-1]

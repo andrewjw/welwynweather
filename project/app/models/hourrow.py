@@ -1,8 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
-
-from heaviestrainrecord import HeaviestRainRecord
+from django.conf import settings
 
 dir_text_map = { 0: "North", 1: "NNE", 2: "North East", 3: "ENE",
     4: "East", 5: "ESE", 6: "South East", 7: "SSE", 8: "South",
@@ -89,9 +88,11 @@ class HourRow(models.Model):
 
         self.status = status
 
-        self.save()
+        for update in settings.HOUR_ROW:
+            if self.date >= update["start"] and self.date < update["end"]:
+                update["func"](self)
 
-        HeaviestRainRecord.update(self)
+        self.save()
 
     class Meta:
         app_label = "app"

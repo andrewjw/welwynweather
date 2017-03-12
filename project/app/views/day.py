@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 
 from django.http import Http404
 from django.shortcuts import render_to_response
+from django.utils.timezone import utc
 
 from app.models import WeatherRow, DayRow, HourRow, ClimateMonth
 
 def day(req, year, month, day):
     try:
-        date = datetime(int(year), int(month), int(day))
+        date = datetime(int(year), int(month), int(day), tzinfo=utc)
     except ValueError:
         raise Http404
 

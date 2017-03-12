@@ -7,6 +7,8 @@ class Command(BaseCommand):
         WeatherRow.objects.all().delete()
         HourRow.objects.all().delete()
         DayRow.objects.all().delete()
+        MonthRow.objects.all().delete()
+        YearRow.objects.all().delete()
 
         HighestTemperatureRecord.objects.all().delete()
         LowestTemperatureRecord.objects.all().delete()
@@ -25,5 +27,8 @@ class Command(BaseCommand):
 
         ColdestPeriodRecord.objects.all().delete()
         WarmestPeriodRecord.objects.all().delete()
-        
+
         ClimateMonth.objects.all().delete()
+        ClimateByMonth.objects.all().delete()
+
+        ClimateByYear.objects.all().delete()

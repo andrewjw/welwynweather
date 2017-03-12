@@ -1,5 +1,9 @@
 # Django settings for weather project.
 
+from datetime import date, datetime
+
+from django.utils.timezone import utc
+
 from settings_local import *
 
 # Local time zone for this installation. Choices can be found here:
@@ -57,11 +61,11 @@ STATICFILES_FINDERS = (
 SECRET_KEY = 'i3e4i+^h=7urdu$q$wk#6x(bkom_$o5#ltxtrgf+i%t+!76)h0'
 
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+#TEMPLATE_LOADERS = (
+#    'django.template.loaders.filesystem.Loader',
+#    'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.Loader',
-)
+#)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -78,11 +82,27 @@ ROOT_URLCONF = 'weather.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'weather.wsgi.application'
 
-TEMPLATE_DIRS = (
+#TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-)
+#)
+
+TEMPLATES = [
+{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    #'DIRS': ['/home/jay/apijay/templates',],
+    'APP_DIRS': True,
+    'OPTIONS': {
+        'context_processors': [
+            'django.template.context_processors.debug',
+            'django.template.context_processors.request',
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+        ],
+    },
+},
+]
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -91,7 +111,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'south',
     'app',
     'electricity',
     # Uncomment the next line to enable the admin:
@@ -128,3 +147,57 @@ LOGGING = {
         },
     }
 }
+
+def nullrain(row):
+    row.rain = None
+    row.rained = False
+
+def set_rain(rain):
+    def func(row):
+        row.rain = rain
+        row.rained = rain > 0
+    return func
+
+def set_temp_out(temp):
+    def func(row):
+        row.temp_out = temp
+    return func
+
+def set_temp_in(temp):
+    def func(row):
+        row.temp_in = temp
+    return func
+
+RAW_DATA = [
+    { "start": datetime(2016, 5, 11, 1, 15, 0, 0, utc), "end": datetime(2017, 5, 11, 1, 25, 0, 0, utc), "func": set_temp_out(12.8) },
+    { "start": datetime(2017, 1, 12, 0, 0, 0, 0, utc), "end": datetime(2017, 2, 2, 0, 0, 0, 0, utc), "func": nullrain },
+    { "start": datetime(2013, 11, 10, 6, 4, 0, 0, utc), "end": datetime(2017, 11, 10, 6, 5, 0, 0, utc), "func": set_temp_in(18.3) }
+]
+
+HOUR_ROW = [
+    { "start": datetime(2017, 1, 12, 0, 0, 0, 0, utc), "end": datetime(2017, 2, 2, 0, 0, 0, 0, utc), "func": nullrain }
+]
+
+DAY_ROW = [
+    { "day": date(2017, 1, 12), "func": set_rain(7.6) },
+    { "day": date(2017, 1, 13), "func": set_rain(2) },
+    { "day": date(2017, 1, 14), "func": set_rain(0) },
+    { "day": date(2017, 1, 15), "func": set_rain(6.1) },
+    { "day": date(2017, 1, 16), "func": set_rain(3.3) },
+    { "day": date(2017, 1, 17), "func": set_rain(0.3) },
+    { "day": date(2017, 1, 18), "func": set_rain(0) },
+    { "day": date(2017, 1, 19), "func": set_rain(0) },
+    { "day": date(2017, 1, 20), "func": set_rain(0) },
+    { "day": date(2017, 1, 21), "func": set_rain(0) },
+    { "day": date(2017, 1, 22), "func": set_rain(0.3) },
+    { "day": date(2017, 1, 23), "func": set_rain(0) },
+    { "day": date(2017, 1, 24), "func": set_rain(0) },
+    { "day": date(2017, 1, 25), "func": set_rain(0.3) },
+    { "day": date(2017, 1, 26), "func": set_rain(0) },
+    { "day": date(2017, 1, 27), "func": set_rain(0.3) },
+    { "day": date(2017, 1, 28), "func": set_rain(0) },
+    { "day": date(2017, 1, 29), "func": set_rain(8.6) },
+    { "day": date(2017, 1, 30), "func": set_rain(0.3) },
+    { "day": date(2017, 1, 31), "func": set_rain(4.6) },
+    { "day": date(2017, 2, 1), "func": set_rain(1.3) }
+]

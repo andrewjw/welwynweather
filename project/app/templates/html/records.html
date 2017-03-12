@@ -23,7 +23,7 @@
         <h3>Highest Pressure</h3>
         <table>
             {% for row in highest_pressure %}
-            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.pressure }} mbar</td></tr>
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.pressure|floatformat:1 }} mbar</td></tr>
             {% endfor %}
         </table>
     </div>
@@ -50,7 +50,7 @@
         <h3>Lowest Pressure</h3>
         <table>
             {% for row in lowest_pressure %}
-            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.pressure }} mbar</td></tr>
+            <tr><td class="date">{{ row.date|date }}</td><td class="value">{{ row.pressure|floatformat:1 }} mbar</td></tr>
             {% endfor %}
         </table>
     </div>

@@ -1,8 +1,10 @@
 from django.db import models
 
+from app.models import DayRow
+
 class ColdestPeriodRecord(models.Model):
-    start_date = models.DateTimeField(primary_key=True)
-    end_date = models.DateTimeField()
+    start_date = models.DateField(primary_key=True)
+    end_date = models.DateField()
 
     current = models.BooleanField()
 
@@ -12,34 +14,29 @@ class ColdestPeriodRecord(models.Model):
         self.length = (self.end_date - self.start_date).days + 1
 
     @staticmethod
-    def update(row):
-        if row.min_temp_out > 0:
-            return
+    def update():
+        periods = []
 
-        pd = row.prev_day()
-        if pd is not None:
-            current = ColdestPeriodRecord.objects.filter(end_date=pd.date)
-            if current.count() > 0:
-                current[0].end_date = row.date
-                current[0].calc_length()
-                current[0].save()
-                return
+        period = None
 
-        period = ColdestPeriodRecord(start_date=row.date, end_date=row.date)
-        d = row.prev_day()
-        while d is not None and d.min_temp_out <= 0:
-            period.start_date = d.date
-            d = d.prev_day()
+        for day in DayRow.objects.order_by("date"):
+            if day.min_temp_out >= 0 and period is not None:
+                periods.append(period)
+                periods.sort(key=lambda p: -p.length)
+                periods = periods[:5]
+                period = None
 
-        period.calc_length()
-        
-        records = ColdestPeriodRecord.objects.all().order_by("length")
-        if records.count() < 5:
-            period.save()
-        elif period.length > records[0].length:
-            period.save()
-            [r.delete() for r in ColdestPeriodRecord.objects.all()[5:]]
-    
+            if day.min_temp_out < 0 and period is None:
+                period = ColdestPeriodRecord(start_date=day.date, end_date=day.date, current=False, length=1)
+            elif day.min_temp_out < 0:
+                period.end_date = day.date
+                period.length += 1
+
+        if period is not None:
+            periods.append(period)
+        periods.sort(key=lambda p: -p.length)
+        [p.save() for p in periods[:5]]
+
     class Meta:
         app_label = "app"
         ordering = ["-length"]

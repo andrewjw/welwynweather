@@ -1,16 +1,18 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    url(r'^$', 'app.views.index'),
-    url(r'^(\d\d\d\d)/(\d\d?)/(\d\d?)$', 'app.views.day', name='day'),
-    url(r'^(\d\d\d\d)/(\d\d?)$', 'app.views.month', name='month'),
-    url(r'^(\d\d\d\d)$', 'app.views.year', name='year'),
-    url(r'^about$', 'app.views.about'),
-    url(r'^records$', 'app.views.records'),
+import app.views
+
+urlpatterns = [
+    url(r'^$', app.views.index),
+    url(r'^(\d\d\d\d)/(\d\d?)/(\d\d?)$', app.views.day, name='day'),
+    url(r'^(\d\d\d\d)/(\d\d?)$', app.views.month, name='month'),
+    url(r'^(\d\d\d\d)$', app.views.year, name='year'),
+    url(r'^about$', app.views.about),
+    url(r'^records$', app.views.records),
 
     # Examples:
     # url(r'^$', 'weather.views.home', name='home'),
@@ -21,14 +23,14 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-)
+]
 
 try:
-    import electricity
+    import electricity.views
 except ImportError:
     pass
 else:
-    urlpatterns += patterns('',
-       url(r'^electricity/?$', 'electricity.views.index'),
-       url(r'^electricity/(\d\d\d\d)/(\d\d?)/(\d\d?)$', 'electricity.views.day'),
-    )
+    urlpatterns += [
+       url(r'^electricity/?$', electricity.views.index),
+       url(r'^electricity/(\d\d\d\d)/(\d\d?)/(\d\d?)$', electricity.views.day),
+    ]

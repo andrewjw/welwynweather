@@ -5,7 +5,7 @@ from django.db import models
 from monthrow import MonthRow
 
 class YearRow(models.Model):
-    date = models.DateTimeField(primary_key=True)
+    date = models.DateField(primary_key=True)
 
     avg_temp_in = models.FloatField()
     avg_temp_out = models.FloatField()
@@ -20,18 +20,20 @@ class YearRow(models.Model):
     max_temp_in = models.FloatField()
     min_temp_in = models.FloatField()
 
-    max_hum_out = models.FloatField()
-    min_hum_out = models.FloatField()
-    max_temp_out = models.FloatField()
-    min_temp_out = models.FloatField()
+    max_hum_out = models.FloatField(null=True, blank=True)
+    min_hum_out = models.FloatField(null=True, blank=True)
+    max_temp_out = models.FloatField(null=True, blank=True)
+    min_temp_out = models.FloatField(null=True, blank=True)
 
-    max_wind_gust = models.FloatField()
+    max_wind_gust = models.FloatField(null=True, blank=True)
 
     rain = models.FloatField()
 
     hot_days = models.IntegerField()
     cold_days = models.IntegerField()
     rain_days = models.IntegerField()
+
+    data_quality = models.FloatField()
 
     @staticmethod
     def update(d):
@@ -65,15 +67,18 @@ class YearRow(models.Model):
 
         y.max_wind_gust = max([m.max_wind_gust for d in months])
 
-        y.rain = sum([m.rain for m in months])
+        y.rain = sum([m.rain for m in months if m.rain is not None])
 
         y.hot_days = sum([m.hot_days for m in months])
         y.cold_days = sum([m.cold_days for m in months])
         y.rain_days = sum([m.rain_days for m in months])
 
-        y.save()
+        good = sum([d.good_rows for d in days])
+        bad = sum([d.bad_rows for d in days])
 
-        ClimateByYear.update(d)
+        y.data_quality = 100.0 * good/(good + bad)
+
+        y.save()
 
     class Meta:
         app_label = "app"

@@ -1,23 +1,19 @@
 from django.db import models
 
+from app.models import DayRow
+
 class WettestDayRecord(models.Model):
-    date = models.DateTimeField(primary_key=True)
+    date = models.DateField(primary_key=True)
 
     rain = models.FloatField()
 
     @staticmethod
-    def update(row):
-        if not row.rained:
-            return
+    def update():
+        records = DayRow.objects.all().order_by("-rain")[:5]
 
-        if WettestDayRecord.objects.all().count() < 5:
-            WettestDayRecord(date=row.date, rain=row.rain).save()
-        else:
-            record = WettestDayRecord.objects.order_by("rain")[0]
+        WettestDayRecord.objects.all().delete()
 
-            if row.rain > record.rain:
-                WettestDayRecord(date=row.date, rain=row.rain).save()
-                [r.delete() for r in WettestDayRecord.objects.all()[5:]]
+        [WettestDayRecord(date=d.date, rain=d.rain).save() for d in records]
 
     class Meta:
         app_label = "app"

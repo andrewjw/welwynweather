@@ -1,13 +1,13 @@
 {% extends "html/base.html" %}
 
 {% block content %}
-<h2>{% if prev_month %}<a href="{% url app.views.month prev_month.year prev_month.month %}">&lt;&lt;</a>{% endif %}
+<h2>{% if prev_month %}<a href="{% url 'month' prev_month.year prev_month.month %}">&lt;&lt;</a>{% endif %}
     {{ date|date:"F" }}
-    <a href="{% url app.views.year date.year %}">{{ date.year }}</a>
-    {% if next_month %}<a href="{% url app.views.month next_month.year next_month.month %}">&gt;&gt;</a>{% endif %}</h2>
+    <a href="{% url 'year' date.year %}">{{ date.year }}</a>
+    {% if next_month %}<a href="{% url 'month' next_month.year next_month.month %}">&gt;&gt;</a>{% endif %}</h2>
 
 <p class="subdates">{% for day in days %}
-        <a href="{% url app.views.day day.year day.month day.day %}">{{ day.day }}</a>
+        <a href="{% url 'day' day.year day.month day.day %}">{{ day.day }}</a>
     {% endfor %}</p>
 
 <div id="tabs">

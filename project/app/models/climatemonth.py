@@ -47,6 +47,8 @@ class ClimateMonth(models.Model):
             month = ClimateMonth(month=d.date.month)
 
         days = DayRow.objects.filter(date__month=month.month)
+        if len(days) == 0:
+            return
 
         month.avg_temp_in_record = max([d.avg_temp_in for d in days])
         month.avg_temp_in_average = sum([d.avg_temp_in for d in days])/len(days)

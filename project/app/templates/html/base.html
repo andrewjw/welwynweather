@@ -8,7 +8,7 @@
 
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
-        google.load('visualization', '1.0', {'packages':['corechart', 'imagechart']});
+        google.load('visualization', '1.0', { packages: ['corechart', 'imagechart'] });
 
         var None = null;
     </script>
@@ -26,7 +26,7 @@
         <img src="/static/foldright.png" id="foldleft">
 
         <a href="/">Home</a>
-        <a href="{% url app.views.year today.year %}">{{ today.year }}</a>
+        <a href="{% url 'year' today.year %}">{{ today.year }}</a>
         <a href="/records">Records</a>
         <a href="/about">About</a>
     </div>

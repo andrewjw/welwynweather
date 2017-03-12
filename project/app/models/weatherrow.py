@@ -1,12 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from django.db import models
 from django.utils.timezone import utc
-
-from highestpressurerecord import HighestPressureRecord
-from lowestpressurerecord import LowestPressureRecord
-from strongestgustrecord import StrongestGustRecord
-from strongestwindrecord import StrongestWindRecord
 
 class WeatherRow(models.Model):
     date = models.DateTimeField(primary_key=True)
@@ -34,16 +29,19 @@ class WeatherRow(models.Model):
     @property
     def time(self):
         return "%i:%02i" % (self.date.hour, self.date.minute)
-    
+
     @property
     def contact(self):
         return self.status & 64 == 0 and self.temp_out is not None
-    
+
     def get_hour(self):
         try:
-            return HourRow.objects.get(date=datetime(self.date.year, self.date.month, self.date.day, self.date.hour, tzinfo=utc))
+            return HourRow.objects.get(date=self.get_hour_time())
         except HourRow.DoesNotExist:
-            return HourRow(date=datetime(self.date.year, self.date.month, self.date.day, self.date.hour, tzinfo=utc))
+            return HourRow(date=self.get_hour_time())
+
+    def get_hour_time(self):
+        return datetime(self.date.year, self.date.month, self.date.day, self.date.hour, tzinfo=utc)
 
     def get_day(self):
         try:
@@ -56,18 +54,6 @@ class WeatherRow(models.Model):
             return MonthRow.objects.get(date=datetime(self.date.year, self.date.month, 1, tzinfo=utc))
         except MonthRow.DoesNotExist:
             return MonthRow(date=datetime(self.date.year, self.date.month, 1, tzinfo=utc))
-
-    def save(self, *args, **kwargs):
-        models.Model.save(self, *args, **kwargs)
-
-        self.get_hour().update()
-        self.get_day().update()
-
-        HighestPressureRecord.update(self)
-        LowestPressureRecord.update(self)
-        
-        StrongestGustRecord.update(self)
-        StrongestWindRecord.update(self)
 
     class Meta:
         app_label = "app"

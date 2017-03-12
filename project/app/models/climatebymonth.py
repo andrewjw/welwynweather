@@ -50,7 +50,6 @@ class ClimateByMonth(models.Model):
             month = ClimateByMonth(month=d.date.month)
 
         months = MonthRow.objects.filter(date__month=month.month)
-
         if len(months) == 0:
             return
 
