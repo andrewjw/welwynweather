@@ -1,12 +1,12 @@
 {% extends "html/base.html" %}
 
 {% block content %}
-<h2>{% if prev_year %}<a href="{% url app.views.year prev_year.year %}">&lt;&lt;</a>{% endif %}
+<h2>{% if prev_year %}<a href="{% url 'year' prev_year.year %}">&lt;&lt;</a>{% endif %}
     {{ date.year }}
-    {% if next_year %}<a href="{% url app.views.year next_year.year %}">&gt;&gt;</a>{% endif %}</h2>
+    {% if next_year %}<a href="{% url 'year' next_year.year %}">&gt;&gt;</a>{% endif %}</h2>
 
 <p class="subdates">{% for month in months %}
-        <a href="{% url app.views.month month.year month.month %}">{{ month|date:"F" }}</a>
+        <a href="{% url 'month' month.year month.month %}">{{ month|date:"F" }}</a>
     {% endfor %}</p>
 
     <div id="tabs">
@@ -45,6 +45,10 @@
 <h3>Humidity</h3>
 
 <div id="humidity_div"></div>
+
+<h3>Data Quality ({{ year.data_quality|floatformat:2 }}%)</h3>
+
+<div id="quality_div"></div>
 </div>
 <div id="tabs-2">
 <table width="100%" class="data_table">
@@ -72,12 +76,18 @@
 <tr><td>Outside High</td><td>{{ year.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Lowest High</td><td>{{ year.lowest_high_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.lowest_high_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.lowest_high_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Average High</td><td>{{ year.avg_max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Average Low</td><td>{{ year.avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Highest Low</td><td>{{ year.highest_low_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.highest_low_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.highest_low_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Low</td><td>{{ year.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
@@ -114,8 +124,10 @@
 <tr><td>Indoor Record Low</td>{% for year in years %}<td>{{ year.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Average</td>{% for year in years %}<td>{{ year.avg_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Record High</td>{% for year in years %}<td>{{ year.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Lowest High</td>{% for year in years %}<td>{{ year.lowest_high_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Average High</td>{% for year in years %}<td>{{ year.avg_max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Average Low</td>{% for year in years %}<td>{{ year.avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Highest Low</td>{% for year in years %}<td>{{ year.highest_low_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Record Low</td>{% for year in years %}<td>{{ year.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Cold Days (&lt;0<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.cold_days }}</td>{% endfor %}</tr>
 <tr><td>Hot Days (&gt;27<sup>o</sup>C)</td>{% for year in years %}<td>{{ year.hot_days }}</td>{% endfor %}</tr>
@@ -124,6 +136,7 @@
                                                 {% if year.predicted_rain %}<br>{{ year.predicted_rain|floatformat:1 }} mm*{% endif %}
                                             </td>{% endfor %}</tr>
 <tr><td>Days Of Rain</td>{% for year in years %}<td>{{ year.rain_days }}</td>{% endfor %}</tr>
+<tr><td>Data Quality</td>{% for year in years %}<td>{{ year.data_quality|floatformat:2 }}%</td>{% endfor %}</tr>
 </table>
 
 <p>* predicted full year rainfall.</p>
@@ -192,7 +205,7 @@ function drawWindSpeedChart() {
 
     data.addRows([
     {% for row in rows %}
-        ['{{ row.time }}', {{ row.wind_ave }}, {{ row.max_wind_gust }}],
+        ['{{ row.time }}', {{ row.wind_ave|default:'null' }}, {{ row.max_wind_gust|default:'null' }}],
     {% endfor %}
         null]);
 
@@ -236,6 +249,22 @@ function drawHumidityChart() {
     chart.draw(data, {width: 950, height: 240, title: 'Humidity'});
 }
 google.setOnLoadCallback(drawHumidityChart);
+
+function drawQualityChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Quality');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.data_quality }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('quality_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Data Quality'});
+}
+google.setOnLoadCallback(drawQualityChart);
 
 $(document).ready(function () {
     $("#tabs").tabs();

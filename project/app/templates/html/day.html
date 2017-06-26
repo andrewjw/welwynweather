@@ -48,6 +48,8 @@
 <p>Inside: <b>Maximum:</b> {{ day.max_hum_in }}% <b>Minimum:</b> {{ day.min_hum_in }}%</p>
 
 <div id="humidity_div"></div>
+
+<h3>Data quality: {{ day.data_quality|floatformat:2 }}%</h3>
 </div>
 <div id="tabs-2">
 <table class="data_table">
@@ -127,6 +129,7 @@
 <tr><td>Wind Gust</td>{% for day in on_this_day %}<td>{{ day.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
 <tr><td>Wind Average</td>{% for day in on_this_day %}<td>{{ day.wind_ave|floatformat:1 }} mph</td>{% endfor %}</tr>
 <tr><td>Rainfall</td>{% for day in on_this_day %}<td>{{ day.rain|floatformat:1 }} mm</td>{% endfor %}</tr>
+<tr><td>Data Quality</td>{% for day in on_this_day %}<td>{{ day.data_quality|floatformat:2 }}%</td>{% endfor %}</tr>
 </table>
 </div>
 </div>
@@ -191,7 +194,7 @@ function drawWindSpeedChart() {
 
     data.addRows([
     {% for row in rows %}
-        ['{{ row.time }}', {{ row.wind_ave }}, {{ row.wind_gust }}],
+        ['{{ row.time }}', {{ row.wind_ave|default:'null' }}, {{ row.wind_gust|default:'null' }}],
     {% endfor %}
         null]);
 

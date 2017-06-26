@@ -9,7 +9,7 @@ from app.models import DayRow, YearRow, ClimateByYear
 
 def year(req, year):
     try:
-        d = date(int(year), 1, 1, tzinfo=utc)
+        d = date(int(year), 1, 1)
     except ValueError:
         raise Http404
 
@@ -29,7 +29,7 @@ def year(req, year):
 
     month = d
     months = []
-    while month.year == date.year:
+    while month.year == d.year:
         if DayRow.objects.filter(date__year=month.year, date__month=month.month).count() > 0:
             months.append(month)
 

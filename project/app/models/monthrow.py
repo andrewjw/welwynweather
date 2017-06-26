@@ -27,6 +27,9 @@ class MonthRow(models.Model):
     max_temp_out = models.FloatField(null=True, blank=True)
     min_temp_out = models.FloatField(null=True, blank=True)
 
+    highest_low_temp_out = models.FloatField(null=True, blank=True)
+    lowest_high_temp_out = models.FloatField(null=True, blank=True)
+
     max_wind_gust = models.FloatField(null=True, blank=True)
 
     rain = models.FloatField(null=True, blank=True)
@@ -72,6 +75,8 @@ class MonthRow(models.Model):
             m.min_hum_out = min([d.min_hum_out for d in days if d.min_hum_out is not None])
             m.max_temp_out = max([d.max_temp_out for d in days if d.max_temp_out is not None])
             m.min_temp_out = min([d.min_temp_out for d in days if d.min_temp_out is not None])
+            m.highest_low_temp_out = max([d.min_temp_out for d in days if d.min_temp_out is not None])
+            m.lowest_high_temp_out = min([d.max_temp_out for d in days if d.max_temp_out is not None])
 
             m.avg_temp_out = sum([row.temp_out for row in rows if row.contact])/len([r for r in rows if r.contact])
             m.avg_max_temp_out = sum([d.max_temp_out for d in days if d.max_temp_out is not None])/len(days)

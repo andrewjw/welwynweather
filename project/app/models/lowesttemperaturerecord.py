@@ -7,6 +7,8 @@ class LowestTemperatureRecord(models.Model):
 
     indoor = models.BooleanField()
 
+    highest = models.BooleanField(default=False)
+
     temperature = models.FloatField(db_index=True)
 
     @staticmethod
@@ -16,8 +18,11 @@ class LowestTemperatureRecord(models.Model):
         for day in DayRow.objects.filter(min_temp_in__isnull=False).order_by("min_temp_in")[:5]:
             LowestTemperatureRecord(date=day.date, indoor=True, temperature=day.min_temp_in).save()
 
-        for day in DayRow.objects.filter(min_temp_out__isnull=False).order_by("min_temp_out")[:5]:
+        for day in DayRow.objects.filter(min_temp_out__isnull=False, data_quality__gt=50).order_by("min_temp_out")[:5]:
             LowestTemperatureRecord(date=day.date, indoor=False, temperature=day.min_temp_out).save()
+
+        for day in DayRow.objects.filter(min_temp_out__isnull=False, data_quality__gt=50).order_by("-min_temp_out")[:5]:
+            LowestTemperatureRecord(date=day.date, indoor=False, temperature=day.min_temp_out, highest=True).save()
 
     class Meta:
         app_label = "app"

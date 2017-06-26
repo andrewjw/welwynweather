@@ -151,27 +151,28 @@ LOGGING = {
 def nullrain(row):
     row.rain = None
     row.rained = False
+    return True
 
 def set_rain(rain):
     def func(row):
         row.rain = rain
         row.rained = rain > 0
+        return True
     return func
 
-def set_temp_out(temp):
+def set_prop(prop, value):
     def func(row):
-        row.temp_out = temp
-    return func
-
-def set_temp_in(temp):
-    def func(row):
-        row.temp_in = temp
+        setattr(row, prop, value)
+        return True
     return func
 
 RAW_DATA = [
-    { "start": datetime(2016, 5, 11, 1, 15, 0, 0, utc), "end": datetime(2017, 5, 11, 1, 25, 0, 0, utc), "func": set_temp_out(12.8) },
-    { "start": datetime(2017, 1, 12, 0, 0, 0, 0, utc), "end": datetime(2017, 2, 2, 0, 0, 0, 0, utc), "func": nullrain },
-    { "start": datetime(2013, 11, 10, 6, 4, 0, 0, utc), "end": datetime(2017, 11, 10, 6, 5, 0, 0, utc), "func": set_temp_in(18.3) }
+    { "start": datetime(2012, 1, 18, 1, 15, 0, 0, utc), "end": datetime(2012, 1, 19, 21, 0, 0, 0, utc), "func": set_prop("temp_out", None) },
+    { "start": datetime(2012, 2, 24, 17, 0, 0, 0, utc), "end": datetime(2012, 2, 24, 19, 0, 0, 0, utc), "func": lambda row: False },
+    { "start": datetime(2013, 11, 10, 6, 4, 0, 0, utc), "end": datetime(2013, 11, 10, 6, 5, 0, 0, utc), "func": set_prop("temp_in", 18.3) },
+    { "start": datetime(2015, 5, 9, 11, 32, 0, 0, utc), "end": datetime(2015, 5, 9, 11, 34, 0, 0, utc), "func": set_prop("wind_gust", 2) },
+    { "start": datetime(2016, 5, 11, 1, 15, 0, 0, utc), "end": datetime(2016, 5, 11, 1, 25, 0, 0, utc), "func": set_prop("temp_out", 12.8) },
+    { "start": datetime(2017, 1, 12, 0, 0, 0, 0, utc), "end": datetime(2017, 2, 2, 0, 0, 0, 0, utc), "func": nullrain }
 ]
 
 HOUR_ROW = [

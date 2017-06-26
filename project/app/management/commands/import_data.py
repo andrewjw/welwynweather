@@ -16,6 +16,7 @@ from app.models import ColdestPeriodRecord, WarmestPeriodRecord
 from app.models import ClimateMonth, DayRow, HeaviestRainRecord, HourRow
 from app.models import StrongestWindRecord, StrongestGustRecord, HighestPressureRecord, LowestPressureRecord
 from app.models import MonthRow, ClimateByMonth, YearRow, ClimateByYear
+from app.models import FastestChange
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
@@ -48,6 +49,7 @@ def do_import(data_dir):
     WettestDayRecord.update()
     ColdestPeriodRecord.update()
     WarmestPeriodRecord.update()
+    FastestChange.update()
 
 def import_year(data_dir, last_update, year):
     all_months = sorted(glob.glob(data_dir + os.sep + year + os.sep + "*"))
@@ -129,9 +131,14 @@ def import_day(filename, last_update):
 
         for update_spec in settings.RAW_DATA:
             if update >= update_spec["start"] and update < update_spec["end"]:
-                update_spec["func"](obj)
+                r = update_spec["func"](obj)
+                if r is None:
+                    raise Exception()
+                if not r:
+                    obj.date = None
 
-        obj.save()
+        if obj.date is not None:
+            obj.save()
 
     for hour in hours:
         try:

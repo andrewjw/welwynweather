@@ -109,9 +109,18 @@ p.subdates {
     font-size: 0.8em;
 }
 
+.records {
+    display: flex;
+    flex-direction: column;
+}
+
+.record_row {
+    display: flex;
+    flex-direction: row;
+}
+
 .record {
     width: 310px;
-    float: left;
     margin: 3px;
     border: 2px solid black;
     text-align: center;

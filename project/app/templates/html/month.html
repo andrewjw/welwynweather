@@ -49,6 +49,10 @@
 <p>Inside: <b>Maximum:</b> {{ max_hum_in|floatformat:1 }}% <b>Minimum:</b> {{ min_hum_in|floatformat:1 }}%</p>
 
 <div id="humidity_div"></div>
+
+<h3>Data Quality ({{ month.data_quality|floatformat:2 }}%)</h3>
+
+<div id="quality_div"></div>
 </div>
 <div id="tabs-2">
 <table width="100%" class="data_table">
@@ -76,12 +80,18 @@
 <tr><td>Outside Record High</td><td>{{ month.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Lowest High</td><td>{{ month.lowest_high_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.lowest_high_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.lowest_high_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Average High</td><td>{{ month.avg_max_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_max_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_max_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Average Low</td><td>{{ month.avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.avg_min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
+<tr><td>Outside Highest Low</td><td>{{ month.highest_low_temp_out|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.highest_low_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
+                        <td>{{ climate.highest_low_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
 <tr><td>Outside Record Low</td><td>{{ month.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_out_record|floatformat:1 }}<sup>o</sup>C</td>
                         <td>{{ climate.min_temp_out_average|floatformat:1 }}<sup>o</sup>C</td></tr>
@@ -114,14 +124,17 @@
 <tr><td>Indoor Low</td>{% for month in months %}<td>{{ month.min_temp_in|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Average</td>{% for month in months %}<td>{{ month.avg_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside High</td>{% for month in months %}<td>{{ month.max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Lowest High</td>{% for month in months %}<td>{{ month.lowest_high_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Average High</td>{% for month in months %}<td>{{ month.avg_max_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Average Low</td>{% for month in months %}<td>{{ month.avg_min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
+<tr><td>Outside Highest Low</td>{% for month in months %}<td>{{ month.highest_low_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Outside Low</td>{% for month in months %}<td>{{ month.min_temp_out|floatformat:1 }}<sup>o</sup>C</td>{% endfor %}</tr>
 <tr><td>Cold Days (&lt;0<sup>o</sup>C)</td>{% for month in months %}<td>{{ month.cold_days|floatformat:1 }}</td>{% endfor %}</tr>
 <tr><td>Hot Days (&gt;27<sup>o</sup>C)</td>{% for month in months %}<td>{{ month.hot_days|floatformat:1 }}</td>{% endfor %}</tr>
 <tr><td>Wind Gust</td>{% for month in months %}<td>{{ month.max_wind_gust|floatformat:1 }} mph</td>{% endfor %}</tr>
 <tr><td>Rainfall</td>{% for month in months %}<td>{{ month.rain|floatformat:1 }} mm</td>{% endfor %}</tr>
 <tr><td>Days Of Rain</td>{% for month in months %}<td>{{ month.rain_days|floatformat:1 }}</td>{% endfor %}</tr>
+<tr><td>Data Quality</td>{% for month in months %}<td>{{ month.data_quality|floatformat:1 }}%</td>{% endfor %}</tr>
 </table>
 </div>
 </div>
@@ -186,9 +199,10 @@ function drawWindSpeedChart() {
 
     data.addRows([
     {% for row in rows %}
-        ['{{ row.time }}', {{ row.wind_ave|floatformat:1 }}, {{ row.wind_gust|floatformat:1 }}],
+        ['{{ row.time }}', {{ row.wind_ave|default:'null' }}, {{ row.wind_gust|default:'null' }}],
     {% endfor %}
         null]);
+            //['{{ row.time }}', {{ row.wind_ave|floatformat:1|default_if_none:'null' }}, {{ row.wind_gust|floatformat:1|default_if_none:'null' }}],
 
     var chart = new google.visualization.LineChart(document.getElementById('windspeed_div'));
     chart.draw(data, {width: 650, height: 240, title: 'Wind Speed'});
@@ -228,6 +242,22 @@ function drawHumidityChart() {
     chart.draw(data, {width: 950, height: 240, title: 'Humidity'});
 }
 google.setOnLoadCallback(drawHumidityChart);
+
+function drawQualityChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Quality');
+
+    data.addRows([
+    {% for row in rows %}
+        ['{{ row.time }}', {{ row.data_quality }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('quality_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Data Quality'});
+}
+google.setOnLoadCallback(drawQualityChart);
 
 $(document).ready(function () {
     $("#tabs").tabs();

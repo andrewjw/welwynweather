@@ -27,6 +27,10 @@ class HourRow(models.Model):
 
     status = models.IntegerField()
 
+    data_quality = models.FloatField()
+    good_rows = models.IntegerField()
+    bad_rows = models.IntegerField()
+
     @property
     def time(self):
         return self.date.strftime("%a %d, %I %p")
@@ -47,6 +51,7 @@ class HourRow(models.Model):
 
         hum_in, temp_in, hum_out, temp_out, abs_pressure, wind_ave, wind_gust, rain, status = 0, 0, 0, 0, 0, 0, 0, 0, 0
         wind_dir = {}
+        count, good = 0, 0
         for row in WeatherRow.objects.filter(date__gte=self.date, date__lt=self.date + timedelta(seconds=60*60)):
             in_count += 1
             hum_in += row.hum_in
@@ -58,7 +63,7 @@ class HourRow(models.Model):
                 temp_out += row.temp_out
 
                 wind_gust = max(wind_gust, row.wind_gust)
-                wind_ave += row.wind_ave
+                wind_ave += (row.wind_ave if row.wind_ave is not None else 0)
                 wind_dir[row.wind_dir] = wind_dir.get(row.wind_dir, 0) + 1
 
                 rain += row.rain
@@ -66,7 +71,13 @@ class HourRow(models.Model):
             if row.hum_out is not None:
                 hum_out += row.hum_out
 
+            if row.contact:
+                good += 1
+
             status = max(status, row.status)
+
+        if in_count == 0:
+            return
 
         self.hum_in = hum_in / in_count
         self.temp_in = temp_in / in_count
@@ -85,6 +96,9 @@ class HourRow(models.Model):
             self.rain = rain
 
         self.rained = self.rain > 0
+        self.data_quality = 100.0 * good / in_count
+        self.good_rows = good
+        self.bad_rows = in_count - good
 
         self.status = status
 

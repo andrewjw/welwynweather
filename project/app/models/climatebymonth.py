@@ -24,6 +24,10 @@ class ClimateByMonth(models.Model):
     min_temp_out_record = models.FloatField()
     max_temp_out_average = models.FloatField()
     min_temp_out_average = models.FloatField()
+    highest_low_temp_out_record = models.FloatField()
+    lowest_high_temp_out_record = models.FloatField()
+    highest_low_temp_out_average = models.FloatField()
+    lowest_high_temp_out_average = models.FloatField()
     avg_max_temp_out_record = models.FloatField()
     avg_min_temp_out_record = models.FloatField()
     avg_max_temp_out_average = models.FloatField()
@@ -72,6 +76,11 @@ class ClimateByMonth(models.Model):
         month.min_temp_out_record = min([m.min_temp_out for m in months])
         month.max_temp_out_average = sum([m.max_temp_out for m in months])/len(months)
         month.min_temp_out_average = sum([m.min_temp_out for m in months])/len(months)
+
+        month.highest_low_temp_out_record = max([m.highest_low_temp_out for m in months])
+        month.lowest_high_temp_out_record = min([m.lowest_high_temp_out for m in months])
+        month.highest_low_temp_out_average = sum([m.highest_low_temp_out for m in months])/len(months)
+        month.lowest_high_temp_out_average = sum([m.lowest_high_temp_out for m in months])/len(months)
 
         month.avg_max_temp_out_record = max([m.avg_max_temp_out for m in months])
         month.avg_min_temp_out_record = min([m.avg_min_temp_out for m in months])

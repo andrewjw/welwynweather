@@ -25,6 +25,9 @@ class YearRow(models.Model):
     max_temp_out = models.FloatField(null=True, blank=True)
     min_temp_out = models.FloatField(null=True, blank=True)
 
+    highest_low_temp_out = models.FloatField(null=True, blank=True)
+    lowest_high_temp_out = models.FloatField(null=True, blank=True)
+
     max_wind_gust = models.FloatField(null=True, blank=True)
 
     rain = models.FloatField()
@@ -64,6 +67,8 @@ class YearRow(models.Model):
         y.min_hum_out = min([m.min_hum_out for m in months])
         y.max_temp_out = max([m.max_temp_out for m in months])
         y.min_temp_out = min([m.min_temp_out for m in months])
+        y.highest_low_temp_out = max([m.highest_low_temp_out for m in months])
+        y.lowest_high_temp_out = min([m.lowest_high_temp_out for m in months])
 
         y.max_wind_gust = max([m.max_wind_gust for d in months])
 

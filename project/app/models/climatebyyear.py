@@ -23,6 +23,10 @@ class ClimateByYear(models.Model):
     min_temp_out_record = models.FloatField()
     max_temp_out_average = models.FloatField()
     min_temp_out_average = models.FloatField()
+    highest_low_temp_out_record = models.FloatField()
+    lowest_high_temp_out_record = models.FloatField()
+    highest_low_temp_out_average = models.FloatField()
+    lowest_high_temp_out_average = models.FloatField()
     avg_max_temp_out_record = models.FloatField()
     avg_min_temp_out_record = models.FloatField()
     avg_max_temp_out_average = models.FloatField()
@@ -71,6 +75,11 @@ class ClimateByYear(models.Model):
         year.avg_max_temp_out_average = sum([y.avg_max_temp_out for y in years])/len(years)
         year.avg_min_temp_out_record = max([y.avg_min_temp_out for y in years])
         year.avg_min_temp_out_average = sum([y.avg_min_temp_out for y in years])/len(years)
+
+        year.highest_low_temp_out_record = max([y.highest_low_temp_out for y in years])
+        year.lowest_high_temp_out_record = min([y.lowest_high_temp_out for y in years])
+        year.highest_low_temp_out_average = sum([y.highest_low_temp_out for y in years])/len(years)
+        year.lowest_high_temp_out_average = sum([y.lowest_high_temp_out for y in years])/len(years)
 
         year.max_temp_out_record = max([y.max_temp_out for y in years])
         year.min_temp_out_record = min([y.min_temp_out for y in years])
