@@ -124,7 +124,7 @@ class DayRow(models.Model):
         self.bad_rows = count - good
 
         for update in settings.DAY_ROW:
-            if self.date.year == update["day"].year and self.date.month == update["day"].month and
+            if self.date.year == update["day"].year and self.date.month == update["day"].month and \
                 self.date.day == update["day"].day:
                 update["func"](self)
 
