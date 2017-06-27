@@ -149,7 +149,7 @@ LOGGING = {
 }
 
 def nullrain(row):
-    row.rain = None
+    row.rain = 0
     row.rained = False
     return True
 
