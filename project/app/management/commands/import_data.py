@@ -23,10 +23,18 @@ class Command(BaseCommand):
         #p = cProfile.Profile()
         #p.runcall(do_import, options["path"][0] if options["path"] else "/home/andrew/weather/data/raw/")
         #p.print_stats("cumulative")
+        if options["since"] is not None:
+            WeatherRow.objects.filter(date__year__gte=options["since"]).delete()
+            HourRow.objects.filter(date__year__gte=options["since"]).delete()
+            DayRow.objects.filter(date__year__gte=options["since"]).delete()
+            MonthRow.objects.filter(date__year__gte=options["since"]).delete()
+            YearRow.objects.filter(date__year__gte=options["since"]).delete()
+
         do_import(options["path"] if options["path"] else "/home/andrew/weather/data/raw/")
 
     def add_arguments(self, parser):
         parser.add_argument('path', nargs='?', type=str, default=None)
+        parser.add_argument('since', nargs='?', type=int, default=None)
 
 def do_import(data_dir):
     all_years = sorted(glob.glob(data_dir + os.sep + "*"))
