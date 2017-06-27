@@ -87,7 +87,7 @@ def import_month(data_dir, last_update, year, month):
 def import_day(filename, last_update):
     fp = csv.reader(open(filename, "r"))
 
-    obj = None
+    obj, last_obj = None, None
     print filename
     hours = set()
 
@@ -139,6 +139,7 @@ def import_day(filename, last_update):
 
         if obj.date is not None:
             obj.save()
+            last_obj = obj
 
     for hour in hours:
         try:
@@ -147,7 +148,7 @@ def import_day(filename, last_update):
             hourobj = HourRow(date=hour)
         hourobj.update()
 
-    return None if obj is None else obj.get_day().update()
+    return None if last_obj is None else last_obj.get_day().update()
 
 def get_last_update():
     try:
