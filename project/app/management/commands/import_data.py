@@ -23,7 +23,7 @@ class Command(BaseCommand):
         #p = cProfile.Profile()
         #p.runcall(do_import, options["path"][0] if options["path"] else "/home/andrew/weather/data/raw/")
         #p.print_stats("cumulative")
-        do_import(options["path"][0] if options["path"] else "/home/andrew/weather/data/raw/")
+        do_import(options["path"] if options["path"] else "/home/andrew/weather/data/raw/")
 
     def add_arguments(self, parser):
         parser.add_argument('path', nargs='?', type=str, default=None)
