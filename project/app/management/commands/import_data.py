@@ -26,7 +26,7 @@ class Command(BaseCommand):
         do_import(options["path"][0] if options["path"] else "/home/andrew/weather/data/raw/")
 
     def add_arguments(self, parser):
-        parser.add_argument('path', nargs='+', type=str, default=None)
+        parser.add_argument('path', nargs='?', type=str, default=None)
 
 def do_import(data_dir):
     all_years = sorted(glob.glob(data_dir + os.sep + "*"))
