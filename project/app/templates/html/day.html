@@ -14,6 +14,9 @@
     <li><a href="#tabs-2">Data</a></li>
     <li><a href="#tabs-3">Climate</a></li>
     <li><a href="#tabs-4">On This Day</a></li>
+    {% if nestsensors|length > 0 %}
+    <li><a href="#tabs-5">Nest</a></li>
+    {% endif %}
 </ul>
 <div id="tabs-1">
 <h3>Temperature</h3>
@@ -132,6 +135,24 @@
 <tr><td>Data Quality</td>{% for day in on_this_day %}<td>{{ day.data_quality|floatformat:2 }}%</td>{% endfor %}</tr>
 </table>
 </div>
+{% if nestsensors|length > 0 %}
+<div id="tabs-5">
+    <h3>Nest Temperature</h3>
+    <div id="nesttempchart_div"></div>
+
+    <h3>Nest Humidity</h3>
+    <div id="nesthumidity_div"></div>
+
+    <h3>Nest PIR</h3>
+    <div id="nestpir_div"></div>
+
+    <h3>Nest ALS</h3>
+    <div id="nestals_div"></div>
+
+    <h3>Nest TP</h3>
+    <div id="nesttp_div"></div>
+</div>
+{% endif %}
 </div>
 
 <script>
@@ -236,6 +257,96 @@ function drawHumidityChart() {
     chart.draw(data, {width: 950, height: 240, title: 'Humidity'});
 }
 google.setOnLoadCallback(drawHumidityChart);
+
+{% if nestsensors|length > 0 %}
+function drawNestTempChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Temperature');
+
+    data.addRows([
+    {% for row in nestsensors %}
+        ['{{ row.time }}', {{ row.avg_temp }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('nesttempchart_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Nest Temperature'});
+}
+google.setOnLoadCallback(drawNestTempChart);
+
+function drawNestHumidityChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'Humidity');
+
+    data.addRows([
+    {% for row in nestsensors %}
+        ['{{ row.time }}', {{ row.avg_humidity }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('nesthumidity_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Nest Humidity'});
+}
+google.setOnLoadCallback(drawNestHumidityChart);
+
+function drawNestPIRChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'max(pir)');
+
+    data.addRows([
+    {% for row in nestsensors %}
+        ['{{ row.time }}', {{ row.max_pir }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('nestpir_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Nest PIR'});
+}
+google.setOnLoadCallback(drawNestPIRChart);
+
+function drawNestALSChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'max(als)');
+    data.addColumn('number', 'min(als)');
+
+    data.addRows([
+    {% for row in nestsensors %}
+        ['{{ row.time }}', {{ row.max_als }}, {{ row.min_als }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('nestals_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Nest ALS'});
+}
+google.setOnLoadCallback(drawNestALSChart);
+
+function drawNestTPChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Time');
+    data.addColumn('number', 'max(tp0)');
+    data.addColumn('number', 'min(tp0)');
+    data.addColumn('number', 'max(tp1)');
+    data.addColumn('number', 'min(tp1)');
+    data.addColumn('number', 'max(tp2)');
+    data.addColumn('number', 'min(tp2)');
+    data.addColumn('number', 'max(tp3)');
+    data.addColumn('number', 'min(tp3)');
+
+    data.addRows([
+    {% for row in nestsensors %}
+        ['{{ row.time }}', {{ row.max_tp0 }}, {{ row.min_tp0 }}, {{ row.max_tp1 }}, {{ row.min_tp1 }}, {{ row.max_tp2 }}, {{ row.min_tp2 }}, {{ row.max_tp3 }}, {{ row.min_tp3 }}],
+    {% endfor %}
+        null]);
+
+    var chart = new google.visualization.LineChart(document.getElementById('nesttp_div'));
+    chart.draw(data, {width: 950, height: 240, title: 'Nest TP'});
+}
+google.setOnLoadCallback(drawNestTPChart);
+{% endif %}
 
 $(document).ready(function () {
     $("#tabs").tabs();

@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render_to_response
 from django.utils.timezone import utc
 
-from app.models import WeatherRow, DayRow, HourRow, ClimateMonth
+from app.models import WeatherRow, DayRow, HourRow, ClimateMonth, NestSensors
 
 def day(req, year, month, day):
     try:
@@ -30,7 +30,8 @@ def day(req, year, month, day):
             "today": datetime.today(),
             "hourly_data": HourRow.objects.filter(date__gte=date, date__lt=date + timedelta(days=1)),
             "climate": ClimateMonth.objects.get(month=date.month),
-            "on_this_day": DayRow.objects.filter(date__day=date.day, date__month=date.month).order_by("-date")[:5]
+            "on_this_day": DayRow.objects.filter(date__day=date.day, date__month=date.month).order_by("-date")[:5],
+            "nestsensors": NestSensors.objects.filter(date__gte=date, date__lt=date + timedelta(days=1))
         }
 
     return render_to_response("html/day.html", context)

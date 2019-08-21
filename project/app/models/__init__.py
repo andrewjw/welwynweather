@@ -27,3 +27,5 @@ from climatebymonth import ClimateByMonth
 from climatebyyear import ClimateByYear
 
 from fastestchange import FastestChange
+
+from nestsensors import NestSensors
