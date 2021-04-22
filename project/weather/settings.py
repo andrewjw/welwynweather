@@ -173,7 +173,8 @@ RAW_DATA = [
     { "start": datetime(2015, 5, 9, 11, 32, 0, 0, utc), "end": datetime(2015, 5, 9, 11, 34, 0, 0, utc), "func": set_prop("wind_gust", 2) },
     { "start": datetime(2016, 5, 11, 1, 15, 0, 0, utc), "end": datetime(2016, 5, 11, 1, 25, 0, 0, utc), "func": set_prop("temp_out", 12.8) },
     { "start": datetime(2017, 1, 12, 0, 0, 0, 0, utc), "end": datetime(2017, 2, 2, 0, 0, 0, 0, utc), "func": nullrain },
-    { "start": datetime(2017, 4, 11, 7, 20, 0, 0, utc), "end": datetime(2017, 4, 12, 9, 0, 0, 0, utc), "func": lambda row: False }
+    { "start": datetime(2017, 4, 11, 7, 20, 0, 0, utc), "end": datetime(2017, 4, 12, 9, 0, 0, 0, utc), "func": lambda row: False },
+    { "start": datetime(2018, 1, 18, 2, 0, 0, 0, utc), "end": datetime(2018, 1, 18, 7, 0, 0, 0, utc), "func": nullrain }
 ]
 
 HOUR_ROW = [
