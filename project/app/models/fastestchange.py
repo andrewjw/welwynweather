@@ -95,8 +95,6 @@ class FastestChange(models.Model):
         pressure_positives.sort(key=lambda x: -x.value)
         [x.save() for x in pressure_positives[:5]]
         pressure_negatives.sort(key=lambda x: x.value)
-        for fc in pressure_negatives[:5]:
-            print fc.date, fc.temperature, fc.positive, fc.value, fc.end
         [x.save() for x in pressure_negatives[:5]]
 
     @staticmethod
