@@ -41,8 +41,8 @@ def year(req, year):
     years = YearRow.objects.filter(date__lte=d, date__gte=date(2012, 1, 1))
     for yearobj in years:
         if yearobj.date.year == date.today().year:
-            days_in_year = (datetime(int(year), 12, 31) - datetime(int(year), 1, 1)).days
-            days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days
+            days_in_year = (datetime(int(year), 12, 31) - datetime(int(year), 1, 1)).days + 1
+            days_so_far = (datetime.now() - datetime(int(year), 1, 1)).days + 1
             yearobj.predicted_rain = (days_in_year*yearobj.rain)/days_so_far
 
     if len([y for y in years if y.date==d]) == 0:
