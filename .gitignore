@@ -1,3 +1,2 @@
-*.pyc
-weatherve
-settings_local.py
+.next/
+node_modules/

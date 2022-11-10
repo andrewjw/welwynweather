@@ -1,0 +1,7 @@
+.container-md {
+  max-width: 960px;
+}
+
+svg {
+  fill: currentColor;
+}
