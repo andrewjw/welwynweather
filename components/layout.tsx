@@ -30,7 +30,7 @@ export default function Layout({ children }) {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-                <Button href="#home">Today</Button>
+                <Button href="#home">Live</Button>
                 <Nav.Link href="#{ year }">{ year }</Nav.Link>
                 <Nav.Link href="#climate">Climate</Nav.Link>
                 <Nav.Link href="#records">Records</Nav.Link>
@@ -39,7 +39,7 @@ export default function Layout({ children }) {
             </Navbar.Collapse>
         </Container>
         </Navbar>
-        <Container fluid="md">
+        <Container fluid="md" className="pt-3">
             { children }
         </Container>
         <footer className="py-3 my-4 border-top">
