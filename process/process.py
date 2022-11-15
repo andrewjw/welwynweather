@@ -59,16 +59,16 @@ def generate_month(year, month, day_files, destfn):
     hours = []
     last_hour = None
     rain = 0
-    for day_file in sorted(glob.glob(os.path.join(day_files, "*"))):
-        for row in json.load(day_file)["data"]:
-            if last_hour is None or last_hour.hour != row.timestamp.hour:
-                last_hour = row.timestamp.hour
+    for day_file in sorted(glob.glob(os.path.join(day_files, "*.json"))):
+        for row in json.load(open(day_file))["data"]:
+            if last_hour is None or last_hour != parse_date(row["timestamp"]).hour:
+                last_hour = parse_date(row["timestamp"]).hour
 
-                row.rain += rain
+                row["rain"] += rain
 
                 hours.append(row)
             else:
-                rain += row.rain
+                rain += row["rain"]
 
     summary = {
         "month": f"%s %s" % (month, year)
@@ -78,14 +78,27 @@ def generate_month(year, month, day_files, destfn):
 
 def generate_year(year, day_files, destfn):
     days = []
-    for day_file in sorted(glob.glob(os.path.join(day_files, "*"))):
-        days.append(json.load(day_file)["summary"])
+    for day_file in sorted(glob.glob(os.path.join(day_files, "*", "*.json"))):
+        days.append(json.load(open(day_file))["summary"])
 
     summary = {
-        "year": str(year)
+        "year": str(year),
+        "max_temp_in": max([d["max_temp_in"] for d in days if d["max_temp_in"] is not None]),
+        "min_temp_in": min([d["min_temp_in"] for d in days if d["min_temp_in"] is not None]),
+        "max_temp_out": max([d["max_temp_out"] for d in days if d["max_temp_out"] is not None]),
+        "min_temp_out": min([d["min_temp_out"] for d in days if d["min_temp_out"] is not None]),
     }
 
-    json.dump({ "summary": summary, "data": days}, open(destfn, "w"))
+    links = {}
+
+    if int(year) > 2011:
+        links["prev"] = f"/{ int(year) - 1}"
+        links["prev_text"] = f"{ int(year) - 1}"
+    if int(year) < datetime.date.today().year:
+        links["next"] = f"/{ int(year) + 1}"
+        links["next_text"] = f"{ int(year) + 1}"
+
+    json.dump({ "summary": summary, "data": days, "links": links}, open(destfn, "w"))
 
 def generate_recent(dest, destfn, last_day):
     last_day = datetime.date(int(last_day.split("-")[0]), int(last_day.split("-")[1]), int(last_day.split("-")[2]))
@@ -143,11 +156,11 @@ def main():
 
             if month_needs_update:
                 destfn = os.path.join(dest, year.split("/")[-1], month.split("-")[-1] + ".json")
-                generate_month(year, month.split("-")[-1], os.path.join(dest, year, month.split("-")[-1]), destfn)
+                generate_month(year.split("/")[-1], month.split("-")[-1], os.path.join(dest, year.split("/")[-1], month.split("-")[-1]), destfn)
 
         if year_needs_update:
             destfn = os.path.join(dest, year.split("/")[-1] + ".json")
-            generate_year(year, os.path.join(dest, year), destfn)
+            generate_year(year.split("/")[-1], os.path.join(dest, year.split("/")[-1]), destfn)
 
     if last_day is not None:
         open(os.path.join(dest, "today.json"), "w").write(last_day.split("/")[-1].split(".")[0])

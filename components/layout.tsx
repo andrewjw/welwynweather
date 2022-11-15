@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import {useRouter} from 'next/router';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -9,6 +10,14 @@ import Container from 'react-bootstrap/Container';
 
 export default function Layout({ children }) {
   let year = new Date().getUTCFullYear();
+
+  const router = useRouter()
+
+  let live = router.asPath == "/" ? (<Button href="/">Live</Button>) : <Nav.Link href="/">Live</Nav.Link>;
+  let yearlink = router.asPath == "/" + year ? (<Button href={ "/" + year }>{ year }</Button>) : <Nav.Link href={"/" + year }>{ year }</Nav.Link>;
+  let climate = router.asPath == "/climate" ? (<Button href="/climate">Climate</Button>) : <Nav.Link href="/climate">Climate</Nav.Link>;
+  let records = router.asPath == "/records" ? (<Button href="/records">Records</Button>) : <Nav.Link href="/records">Records</Nav.Link>;
+  let about = router.asPath == "/about" ? (<Button href="/about">About</Button>) : <Nav.Link href="/about">About</Nav.Link>;
 
   return (
     <>
@@ -30,11 +39,7 @@ export default function Layout({ children }) {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-                <Button href="#home">Live</Button>
-                <Nav.Link href="#{ year }">{ year }</Nav.Link>
-                <Nav.Link href="#climate">Climate</Nav.Link>
-                <Nav.Link href="#records">Records</Nav.Link>
-                <Nav.Link href="#about">About</Nav.Link>
+                {live}{yearlink}{climate}{records}{about}
             </Nav>
             </Navbar.Collapse>
         </Container>
