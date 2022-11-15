@@ -42,8 +42,10 @@ def generate_day(day, destfn, prev_rain):
 
     has_outside_data = len([d["temp_out"] for d in data if d["temp_out"] is not None]) > 0
 
+    day_string = day.split("/")[-1].split(".")[0]
     summary = {
-        "date": day.split("/")[-1].split(".")[0],
+        "date": day_string,
+        "link": f"/%s/%s/%s" % tuple(day_string.split("-")),
         "max_temp_in": max([d["temp_in"] for d in data if d["temp_in"] is not None]),
         "min_temp_in": min([d["temp_in"] for d in data if d["temp_in"] is not None]),
         "avg_temp_in": mean([d["temp_in"] for d in data if d["temp_in"] is not None]),
@@ -175,16 +177,49 @@ def generate_climate(dest, destfn):
 
     json.dump({ "years": years, "months": months }, open(destfn, "w"))
 
+class TopFive:
+    def __init__(self, reverse=False):
+        self.reverse = reverse
+        self.values = []
+
+    def add(self, value, link, link_text):
+        if value is None:
+            return
+        self.values.append({ "value": value, "link": link, "link_text": link_text })
+        self.values.sort(key=lambda v: v["value"], reverse=self.reverse)
+
+        values = []
+        text = set()
+        for v in self.values:
+            if v["link_text"] not in text:
+                values.append(v)
+                text.add(v["link_text"])
+
+        self.values = values[:5]
+
+def generate_records(dest, destfn):
+    max_temp_out = TopFive(True)
+    min_temp_out = TopFive()
+
+    for year in sorted(glob.glob(os.path.join(dest, "2*.json"))):
+        year_num = year.split("/")[-1].split(".")[0]
+        for month in sorted(glob.glob(os.path.join(dest, year_num, "*.json"))):
+            month_num = month.split("/")[-1].split(".")[0]
+            for day in sorted(glob.glob(os.path.join(dest, year_num, month_num, "*.json"))):
+                day_json = json.load(open(day))
+                for row in day_json["data"]:
+                    if row["temp_out"] is not None:
+                        max_temp_out.add(row["temp_out"], day_json["summary"]["link"], day_json["summary"]["date"])
+                        min_temp_out.add(row["temp_out"], day_json["summary"]["link"], day_json["summary"]["date"])
+    
+    json.dump({ "max_temp_out": max_temp_out.values, "min_temp_out": min_temp_out.values}, open(destfn, "w"))
+
 def parse_date(d):
     return datetime.datetime.strptime(d, "%Y-%m-%d %H:%M:%S").replace(tzinfo=ZoneInfo("UTC"))
 
 def main():
     source = sys.argv[1]
     dest = sys.argv[2]
-    climatefn = os.path.join(dest, "climate.json")
-    if needs_update(None, climatefn) or new_day:
-        generate_climate(dest, climatefn)
-    return
 
     last_day = None
     new_day = False
@@ -226,6 +261,10 @@ def main():
     climatefn = os.path.join(dest, "climate.json")
     if needs_update(None, climatefn) or new_day:
         generate_climate(dest, climatefn)
+
+    recordsfn = os.path.join(dest, "records.json")
+    if needs_update(None, recordsfn) or new_day:
+        generate_records(dest, recordsfn)
 
 if __name__ == "__main__":
     main()
