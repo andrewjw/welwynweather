@@ -8,4 +8,4 @@ npx next info
 
 npx next lint
 
-npx next build
+npm run build

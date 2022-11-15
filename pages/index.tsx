@@ -3,7 +3,7 @@ import * as V from 'victory';
 
 import { victoryTheme } from '../components/victory_theme';
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json())
+const fetcher = (input: RequestInfo | URL, init?: RequestInit | undefined ) => fetch(input, init).then((res) => res.json())
 
 function getTimeFromDate(d: any): string {
     return d["timestamp"].split(" ")[1];

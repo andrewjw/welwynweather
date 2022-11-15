@@ -10,7 +10,7 @@ export async function getStaticProps(context: any) {
   let raw = fs.readFileSync("public/data/climate.json");
 
   return {
-    props: { data: JSON.parse(raw) },
+    props: { data: JSON.parse(raw.toString()) },
   }
 }
 
@@ -45,8 +45,8 @@ export default function Year(props: any) {
     <V.VictoryChart
       theme={victoryTheme}
     >
-      {data["months"].map(year => {
-      let data = year["avg_temp_out"].map((v, i) => { return {"x": i+1, "y": v}; });
+      {data["months"].map((year: any) => {
+      let data = year["avg_temp_out"].map((v: any, i: number) => { return {"x": i+1, "y": v}; });
       return (<V.VictoryLine
         key={"line_" + year["year"]}
         data={data}

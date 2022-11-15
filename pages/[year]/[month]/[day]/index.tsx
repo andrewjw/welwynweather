@@ -6,8 +6,6 @@ import * as V from 'victory';
 
 import { victoryTheme } from '../../../../components/victory_theme';
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json())
-
 function getTimeFromDate(d: any): string {
     return d["timestamp"].split(" ")[1];
 }
@@ -38,7 +36,7 @@ export async function getStaticProps(context: any) {
   let raw = fs.readFileSync("public/data/" + context.params.year + "/" + context.params.month + "/" + context.params.day + ".json");
 
   return {
-    props: { year: context.params.year, month: context.params.month, day: context.params.day, data: JSON.parse(raw) },
+    props: { year: context.params.year, month: context.params.month, day: context.params.day, data: JSON.parse(raw.toString()) },
   }
 }
 

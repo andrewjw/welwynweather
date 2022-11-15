@@ -8,7 +8,7 @@ import styles from '../styles/Home.module.css'
 
 import Container from 'react-bootstrap/Container';
 
-export default function Layout({ children }) {
+export default function Layout({ children }: any) {
   let year = new Date().getUTCFullYear();
 
   const router = useRouter()
