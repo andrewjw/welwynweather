@@ -47,8 +47,8 @@ export default function Year(props: any) {
     >
       {data["months"].map(year => {
       let data = year["avg_temp_out"].map((v, i) => { return {"x": i+1, "y": v}; });
-      console.log(year, data);
       return (<V.VictoryLine
+        key={"line_" + year["year"]}
         data={data}
         x="x"
         y="y"

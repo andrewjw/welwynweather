@@ -24,15 +24,15 @@ export default function Records(props: any) {
     <h3>Highest Outside Temperature</h3>
 
     <ol>
-    { data.max_temp_out.map(record =>
-      <li><a href={ record.link }>{record.link_text}</a> <b>{record.value}&#8451;</b></li>)}
+    { data.max_temp_out.map((record, i) =>
+      <li key={"max_temp_out_"+i}><a href={ record.link }>{record.link_text}</a> <b>{record.value}&#8451;</b></li>)}
     </ol>
 
     <h3>Lowest Outside Temperature</h3>
 
     <ol>
-    { data.min_temp_out.map(record =>
-      <li><a href={ record.link }>{record.link_text}</a> <b>{record.value}&#8451;</b></li>)}
+    { data.min_temp_out.map((record, i) =>
+      <li key={"min_temp_out_"+i}><a href={ record.link }>{record.link_text}</a> <b>{record.value}&#8451;</b></li>)}
     </ol>
     </>
   )
