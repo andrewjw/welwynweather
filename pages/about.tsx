@@ -1,6 +1,4 @@
-export default function Year(props: any) {
-  let data = props.data;
-
+export default function About() {
   return (
     <>
     <h2>About</h2>
