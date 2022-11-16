@@ -8,6 +8,8 @@ npx next info
 
 npm run build
 
-killall node
+kill `cat pid.txt`
 
 npm run start &
+
+echo "$!" > pid.txt
