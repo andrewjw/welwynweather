@@ -45,17 +45,23 @@ export default function Year(props: any) {
     <V.VictoryChart
       theme={victoryTheme}
     >
-      {data["months"].map((year: any) => {
-      let data = year["avg_temp_out"].map((v: any, i: number) => { return {"x": i+1, "y": v}; });
+      {data["months"].map((year: any, i: number) => {
+      let values = year["avg_temp_out"].map((v: any, i: number) => { return {"x": i+(year["year"]=="2011"?9:1), "y": v}; });
+      let stroke = "#0d6efd";
+      if (i < data["months"].length - 1) {
+        let inc = 225 / data["months"].length;
+        const hex = Number(20 + Math.floor(inc * i)).toString(16).padStart(2, '0')
+        stroke = "#" + hex + hex + hex;
+      }
       return (<V.VictoryLine
         key={"line_" + year["year"]}
-        data={data}
+        data={values}
         x="x"
         y="y"
         style={{
           "data": {
             fill: "transparent",
-            stroke: "var(--bs-body-color)",
+            stroke: stroke,
           }
         }}
       />);
