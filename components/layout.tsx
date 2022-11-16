@@ -35,7 +35,7 @@ export default function Layout({ children }: any) {
     <div>
         <Navbar bg="light" expand="lg">
         <Container fluid="md">
-            <Navbar.Brand href="#home">Welwyn Weather</Navbar.Brand>
+            <Navbar.Brand href="/">Welwyn Weather</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
