@@ -38,7 +38,7 @@ class Home extends React.Component<HomeProps> {
     } else if (since_last_update < 60 * 60) {
       last_update_text = "Updated " + Math.floor(since_last_update / 60) + " minutes ago."
     } else {
-      last_update_text = "Date is stale. Sorry :-("
+      last_update_text = "Data is stale. Sorry :-("
     }
 
     return (
